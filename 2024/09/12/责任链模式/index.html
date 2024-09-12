@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>观察者模式 | Switch冇不才的博客</title>
+    <title>责任链模式 | Switch冇不才的博客</title>
     <meta name="author" content="switch冇不才" />
     <meta name="description" content="LIFE AND STUDY" />
     <meta name="keywords" content="" />
@@ -152,7 +152,7 @@
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
             <div class="article">
     <div>
-        <h1>观察者模式</h1>
+        <h1>责任链模式</h1>
     </div>
     <div class="info">
         <span class="date">
@@ -180,7 +180,7 @@
             
             <span class="tag">
                 
-                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">
+                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">
                     设计模式
                 </a>
             </span>
@@ -190,117 +190,127 @@
     </div>
     
     <div class="content" v-pre>
-        <p>观察者模式定义对象间的一种一对多依赖关系，使得每当一个对象状态发生改变时，其相关依赖对象皆得到通知并被自动更新。观察者模式又叫做发布-订阅模式。是一种对象行为模式。<br>重要性程度：5</p>
+        <p>重要程度：3<br>责任链模式是一种行为设计模式，它允许多个对象有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。这个模式将这些对象连接成一条链，并沿着这条链传递请求，直到有一个对象处理它为止。</p>
 <ol>
 <li>主要组成<ol>
-<li>抽象观察者</li>
-<li>具体观察者</li>
-<li>抽象目标</li>
-<li>具体目标</li>
+<li>抽象处理者</li>
+<li>具体处理者</li>
+<li>客户端</li>
 </ol>
 </li>
-<li>优点<ol>
-<li>可以实现表示层和数据逻辑层的分离，并定义了稳定的消息更新传递机制，抽象了更新接口，使得可以有各种各样不同的表示层作为具体观察者角色。</li>
-<li>观察者模式在观察目标和观察者之间建立一个抽象的耦合。</li>
-<li>观察者模式支持广播通信。</li>
-<li>观察者模式符合开闭原则</li>
+<li>典型应用：日志系统。定义一个不同级别的日志信息，如调试、信息、警告、错误等。</li>
+<li>优点：<ol>
+<li>降低耦合度：请求发送者和请求接收者解耦，客户端不需要了解处理请求的具体对象。</li>
+<li>增强灵活性：可以通过添加或删除处理者来修改链的结构。</li>
+<li>职责单一原则：每个处理者只专注于自己能够处理的请求。</li>
 </ol>
 </li>
-<li>缺点<ol>
-<li>通知机制耗费时间</li>
-<li>如果存在循环依赖，会导致出现循环调用，可能导致系统崩溃。</li>
+<li>缺点：<ol>
+<li>请求未必被处理：如果链尾的处理者也无法处理请求，那么请求可能会被丢弃。</li>
+<li>调试复杂：链的结构在运行时才确定，如果链过长，可能会增加调试的难度。</li>
 </ol>
 </li>
 <li>代码</li>
 </ol>
-<pre><code class="cpp">#include &lt;memory&gt;
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
 
-class Subject;
-// 抽象观察者
-class Observer : public std::enable_shared_from_this&lt;Observer&gt; &#123;
-public:
-    Observer(const std::string&amp; name) :_name(name) &#123;&#125;;
-    virtual ~Observer() = default;
-    virtual void update(const std::string&amp; message) = 0;
-    virtual void subscribe(std::shared_ptr&lt;Subject&gt; subject);
-    virtual void unsubscribe(std::shared_ptr&lt;Subject&gt; subject);
+// 抽象处理者类
+class Logger &#123;
 protected:
-    std::string _name;
-    std::vector&lt;std::shared_ptr&lt;Subject&gt;&gt; subjects;
-&#125;;
+    int level;
+    Logger* nextLogger;
 
-// 具体观察者
-class ConcreteObserver : public Observer &#123;
 public:
-    ConcreteObserver(const std::string&amp; name) : Observer(name) &#123;&#125;
+    Logger(int lvl) : level(lvl), nextLogger(nullptr) &#123;&#125;
 
-    void update(const std::string&amp; message) override &#123;
-        std::cout &lt;&lt; _name &lt;&lt; &quot; received message: &quot; &lt;&lt; message &lt;&lt; std::endl;
-    &#125;
-&#125;;
-// 抽象目标
-class Subject &#123;
-public:
-    virtual ~Subject() = default;
-    virtual void attach(std::shared_ptr&lt;Observer&gt; observer) = 0;
-    virtual void detach(std::shared_ptr&lt;Observer&gt; observer) = 0;
-    virtual void notify() = 0;
-&#125;;
-// 具体目标
-class ConcreteSubject : public Subject &#123;
-private:
-    std::vector&lt;std::shared_ptr&lt;Observer&gt;&gt; observers;
-    std::string _message;
-public:
-public:
-    void attach(std::shared_ptr&lt;Observer&gt; observer) override &#123;
-        observers.push_back(observer);
+    void setNextLogger(Logger* next) &#123;
+        nextLogger = next;
     &#125;
 
-    void detach(std::shared_ptr&lt;Observer&gt; observer) override &#123;
-        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
-    &#125;
-
-    void notify() override &#123;
-        for (auto&amp; observer : observers) &#123;
-            observer-&gt;update(_message);  // 通知每个观察者
+    void logMessage(int lvl, const std::string&amp; message) &#123;
+        if (this-&gt;level &lt;= lvl) &#123;
+            write(message);
+        &#125;
+        if (nextLogger != nullptr) &#123;
+            nextLogger-&gt;logMessage(lvl, message);
         &#125;
     &#125;
 
-    void createMessage(const std::string&amp; message) &#123;
-        _message = message;
-        notify();  // 当状态改变时，通知所有观察者
+    virtual void write(const std::string&amp; message) = 0; // 纯虚函数，子类必须实现
+&#125;;
+
+// 具体处理者类：DebugLogger
+class DebugLogger : public Logger &#123;
+public:
+    DebugLogger(int lvl) : Logger(lvl) &#123;&#125;
+
+    void write(const std::string&amp; message) override &#123;
+        std::cout &lt;&lt; &quot;Debug Logger: &quot; &lt;&lt; message &lt;&lt; std::endl;
     &#125;
 &#125;;
 
-void Observer::subscribe(std::shared_ptr&lt;Subject&gt; subject) &#123;
-    subjects.push_back(subject);
-    subject-&gt;attach(shared_from_this());
-&#125;
-void Observer::unsubscribe(std::shared_ptr&lt;Subject&gt; subject) &#123;
-    subjects.erase(std::remove(subjects.begin(), subjects.end(), subject), subjects.end());
-    subject-&gt;detach(shared_from_this());
-&#125;
+// 具体处理者类：InfoLogger
+class InfoLogger : public Logger &#123;
+public:
+    InfoLogger(int lvl) : Logger(lvl) &#123;&#125;
 
-// 测试观察者模式
+    void write(const std::string&amp; message) override &#123;
+        std::cout &lt;&lt; &quot;Info Logger: &quot; &lt;&lt; message &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 具体处理者类：WarningLogger
+class WarningLogger : public Logger &#123;
+public:
+    WarningLogger(int lvl) : Logger(lvl) &#123;&#125;
+
+    void write(const std::string&amp; message) override &#123;
+        std::cout &lt;&lt; &quot;Warning Logger: &quot; &lt;&lt; message &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 具体处理者类：ErrorLogger
+class ErrorLogger : public Logger &#123;
+public:
+    ErrorLogger(int lvl) : Logger(lvl) &#123;&#125;
+
+    void write(const std::string&amp; message) override &#123;
+        std::cout &lt;&lt; &quot;Error Logger: &quot; &lt;&lt; message &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 客户端代码
 int main() &#123;
-    std::shared_ptr&lt;ConcreteSubject&gt; subject = std::make_shared&lt;ConcreteSubject&gt;();
+    // 创建具体的日志处理者
+    Logger* errorLogger = new ErrorLogger(3);
+    Logger* warningLogger = new WarningLogger(2);
+    Logger* infoLogger = new InfoLogger(1);
+    Logger* debugLogger = new DebugLogger(0);
 
-    std::shared_ptr&lt;Observer&gt; observer1 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 1&quot;);
-    std::shared_ptr&lt;Observer&gt; observer2 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 2&quot;);
-    std::shared_ptr&lt;Observer&gt; observer3 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 3&quot;);
+    // 设置责任链：Debug -&gt; Info -&gt; Warning -&gt; Error
+    debugLogger-&gt;setNextLogger(infoLogger);
+    infoLogger-&gt;setNextLogger(warningLogger);
+    warningLogger-&gt;setNextLogger(errorLogger);
 
-    observer1-&gt;subscribe(subject);
-    observer2-&gt;subscribe(subject);
-    observer3-&gt;subscribe(subject);
+    // 测试责任链
+    std::cout &lt;&lt; &quot;Sending a debug level message:&quot; &lt;&lt; std::endl;
+    debugLogger-&gt;logMessage(0, &quot;This is a debug message.&quot;);
 
-    subject-&gt;createMessage(&quot;Hello, Observers!&quot;);  // 向所有观察者发送消息
+    std::cout &lt;&lt; &quot;Sending an info level message:&quot; &lt;&lt; std::endl;
+    debugLogger-&gt;logMessage(1, &quot;This is an info message.&quot;);
 
-    observer2-&gt;unsubscribe(subject);
+    std::cout &lt;&lt; &quot;Sending a warning level message:&quot; &lt;&lt; std::endl;
+    debugLogger-&gt;logMessage(2, &quot;This is a warning message.&quot;);
 
-    subject-&gt;createMessage(&quot;Second message!&quot;);  // 发送另一条消息，只有剩下的观察者会接收到
+    std::cout &lt;&lt; &quot;Sending an error level message:&quot; &lt;&lt; std::endl;
+    debugLogger-&gt;logMessage(3, &quot;This is an error message.&quot;);
+
+    // 释放内存
+    delete debugLogger;
+    delete infoLogger;
+    delete warningLogger;
+    delete errorLogger;
 
     return 0;
 &#125;

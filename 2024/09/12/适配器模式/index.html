@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>观察者模式 | Switch冇不才的博客</title>
+    <title>适配器模式 | Switch冇不才的博客</title>
     <meta name="author" content="switch冇不才" />
     <meta name="description" content="LIFE AND STUDY" />
     <meta name="keywords" content="" />
@@ -152,7 +152,7 @@
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
             <div class="article">
     <div>
-        <h1>观察者模式</h1>
+        <h1>适配器模式</h1>
     </div>
     <div class="info">
         <span class="date">
@@ -162,150 +162,11 @@
             2024/9/12
         </span>
         
-        <span class="category">
-            <a href="/categories/STUDY/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                STUDY
-            </a>
-        </span>
-        
-        
-        <span class="tags">
-            <span class="icon">
-                <i class="fa-solid fa-tags fa-fw"></i>
-            </span>
-            
-            
-            <span class="tag">
-                
-                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">
-                    设计模式
-                </a>
-            </span>
-            
-        </span>
         
     </div>
     
     <div class="content" v-pre>
-        <p>观察者模式定义对象间的一种一对多依赖关系，使得每当一个对象状态发生改变时，其相关依赖对象皆得到通知并被自动更新。观察者模式又叫做发布-订阅模式。是一种对象行为模式。<br>重要性程度：5</p>
-<ol>
-<li>主要组成<ol>
-<li>抽象观察者</li>
-<li>具体观察者</li>
-<li>抽象目标</li>
-<li>具体目标</li>
-</ol>
-</li>
-<li>优点<ol>
-<li>可以实现表示层和数据逻辑层的分离，并定义了稳定的消息更新传递机制，抽象了更新接口，使得可以有各种各样不同的表示层作为具体观察者角色。</li>
-<li>观察者模式在观察目标和观察者之间建立一个抽象的耦合。</li>
-<li>观察者模式支持广播通信。</li>
-<li>观察者模式符合开闭原则</li>
-</ol>
-</li>
-<li>缺点<ol>
-<li>通知机制耗费时间</li>
-<li>如果存在循环依赖，会导致出现循环调用，可能导致系统崩溃。</li>
-</ol>
-</li>
-<li>代码</li>
-</ol>
-<pre><code class="cpp">#include &lt;memory&gt;
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-
-class Subject;
-// 抽象观察者
-class Observer : public std::enable_shared_from_this&lt;Observer&gt; &#123;
-public:
-    Observer(const std::string&amp; name) :_name(name) &#123;&#125;;
-    virtual ~Observer() = default;
-    virtual void update(const std::string&amp; message) = 0;
-    virtual void subscribe(std::shared_ptr&lt;Subject&gt; subject);
-    virtual void unsubscribe(std::shared_ptr&lt;Subject&gt; subject);
-protected:
-    std::string _name;
-    std::vector&lt;std::shared_ptr&lt;Subject&gt;&gt; subjects;
-&#125;;
-
-// 具体观察者
-class ConcreteObserver : public Observer &#123;
-public:
-    ConcreteObserver(const std::string&amp; name) : Observer(name) &#123;&#125;
-
-    void update(const std::string&amp; message) override &#123;
-        std::cout &lt;&lt; _name &lt;&lt; &quot; received message: &quot; &lt;&lt; message &lt;&lt; std::endl;
-    &#125;
-&#125;;
-// 抽象目标
-class Subject &#123;
-public:
-    virtual ~Subject() = default;
-    virtual void attach(std::shared_ptr&lt;Observer&gt; observer) = 0;
-    virtual void detach(std::shared_ptr&lt;Observer&gt; observer) = 0;
-    virtual void notify() = 0;
-&#125;;
-// 具体目标
-class ConcreteSubject : public Subject &#123;
-private:
-    std::vector&lt;std::shared_ptr&lt;Observer&gt;&gt; observers;
-    std::string _message;
-public:
-public:
-    void attach(std::shared_ptr&lt;Observer&gt; observer) override &#123;
-        observers.push_back(observer);
-    &#125;
-
-    void detach(std::shared_ptr&lt;Observer&gt; observer) override &#123;
-        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
-    &#125;
-
-    void notify() override &#123;
-        for (auto&amp; observer : observers) &#123;
-            observer-&gt;update(_message);  // 通知每个观察者
-        &#125;
-    &#125;
-
-    void createMessage(const std::string&amp; message) &#123;
-        _message = message;
-        notify();  // 当状态改变时，通知所有观察者
-    &#125;
-&#125;;
-
-void Observer::subscribe(std::shared_ptr&lt;Subject&gt; subject) &#123;
-    subjects.push_back(subject);
-    subject-&gt;attach(shared_from_this());
-&#125;
-void Observer::unsubscribe(std::shared_ptr&lt;Subject&gt; subject) &#123;
-    subjects.erase(std::remove(subjects.begin(), subjects.end(), subject), subjects.end());
-    subject-&gt;detach(shared_from_this());
-&#125;
-
-// 测试观察者模式
-int main() &#123;
-    std::shared_ptr&lt;ConcreteSubject&gt; subject = std::make_shared&lt;ConcreteSubject&gt;();
-
-    std::shared_ptr&lt;Observer&gt; observer1 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 1&quot;);
-    std::shared_ptr&lt;Observer&gt; observer2 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 2&quot;);
-    std::shared_ptr&lt;Observer&gt; observer3 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 3&quot;);
-
-    observer1-&gt;subscribe(subject);
-    observer2-&gt;subscribe(subject);
-    observer3-&gt;subscribe(subject);
-
-    subject-&gt;createMessage(&quot;Hello, Observers!&quot;);  // 向所有观察者发送消息
-
-    observer2-&gt;unsubscribe(subject);
-
-    subject-&gt;createMessage(&quot;Second message!&quot;);  // 发送另一条消息，只有剩下的观察者会接收到
-
-    return 0;
-&#125;
-</code></pre>
-
+        
     </div>
     
     
