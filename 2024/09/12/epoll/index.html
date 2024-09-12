@@ -23,20 +23,16 @@
 />
 <script> const mixins = {}; </script>
 
-<script src="https://polyfill.alicdn.com/v3/polyfill.min.js?features=default"></script>
-
 
 <script src="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="https://s4.zstatic.net/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
 <link
     rel="stylesheet"
-    href="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    href="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/styles/vs.min.css"
 />
 <script src="/js/lib/highlight.js"></script>
 
 
-
-<script src="/js/lib/preview.js"></script>
 
 
 
@@ -184,15 +180,15 @@
             
             <span class="tag">
                 
-                <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #00a596">
-                    网络编程
+                <a href="/tags/epoll/" style="color: #ffa2c4">
+                    epoll
                 </a>
             </span>
             
             <span class="tag">
                 
-                <a href="/tags/epoll/" style="color: #00bcd4">
-                    epoll
+                <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #ff7d73">
+                    网络编程
                 </a>
             </span>
             
@@ -221,10 +217,8 @@
 </li>
 <li><p>问题：如何监视多个socket的数据。操作系统的一个进程将网卡中的数据传入到对应socket的缓冲区中，但是一个计算机系统有很多个socket，如何监视这些socket的状态的变化。</p>
 <ul>
-<li><p>recv是其中的一种方法，但是recv只能监视单个socket，当服务器和多个客户端创建连接时，会创建多个通信用的socket。只是用recv会过于繁琐。</p>
-</li>
-<li><p>select、poll、epoll的本质就是同时监视多个socket.</p>
-</li>
+<li>recv是其中的一种方法，但是recv只能监视单个socket，当服务器和多个客户端创建连接时，会创建多个通信用的socket。只是用recv会过于繁琐。</li>
+<li>select、poll、epoll的本质就是同时监视多个socket.</li>
 </ul>
 </li>
 </ol>
@@ -250,16 +244,16 @@
 <p><strong>其它</strong>：<br>文件描述符在进程中的管理方式：每个进程在操作系统中都有一张文件描述符表，这张表用来管理该进程打开的所有文件，套接字、管道等资源。文件描述符是一个进程局部的概念。0，1，2分别代表标准输入、输出、错误。<br>系统级文件表：操作系统为每个打开的文件、套接字或其它IO资源维护一个全局的文件表，文件描述符表中的条目指向全局文件表中的项。即使文件描述符的数值相同，实际上它们在不同进程汇总指向的全局文件表项是不同的。</p>
 <p>函数原型</p>
 <pre><code>int select(int nfds, 
-        fd_set *readfds, 
-        fd_set *writefds, 
-        fd_set *exceptfds, 
-        struct timeval *timeout);
+    fd_set *readfds, 
+    fd_set *writefds, 
+    fd_set *exceptfds, 
+    struct timeval *timeout);
 </code></pre>
-<h2 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h2><pre><code>int poll(struct pollfd *fds,
-         nfds_t nfds,   // 表示fds数组汇总文件描述符的数量。
-         int timeout);
+<h2 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h2><pre><code class="cpp">int poll(struct pollfd *fds,
+    nfds_t nfds,   // 表示fds数组汇总文件描述符的数量。
+    int timeout);
 </code></pre>
-<p>其中</p>
+<p>其中    </p>
 <pre><code>struct pollfd &#123;
     int fd;        // 要监控的文件描述符
     short events;  // 感兴趣的事件（要监控哪些事件）
@@ -483,12 +477,6 @@
 </footer>
 
         </div>
-        
-        <transition name="fade">
-            <div id="preview" ref="preview" v-show="previewShow">
-                <img id="preview-content" ref="previewContent" />
-            </div>
-        </transition>
         
     </div>
     <script src="/js/main.js"></script>
