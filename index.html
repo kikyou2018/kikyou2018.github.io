@@ -177,6 +177,127 @@
         
 
 <div class="post">
+    <a href="/2024/09/12/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
+        <h2 class="post-title">策略模式</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/12
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            <p>策略模式定义一系列算法，将每一个算法封装起来，并让它们可以相互替换。策略模式让算法独立于使用它的客户而变化，也称为政策模式。策略模式是一种对象行为型模式。</p>
+<ol>
+<li>主要组成<ol>
+<li>环境类</li>
+<li>抽象策略类</li>
+<li>具体策略类<br>根据环境的某些特质，采用不同的策略。</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>完美支持“开闭原则”，用户可以在不修改原有系统的基础上选择算法或行为，也可以灵活地增加新的算法或行为。</li>
+<li>策略模式提供了可以替换继承关系的办法</li>
+<li>使用策略模式可以避免提供使用多重条件转移语句</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>客户端必须知道是所有的策略类，并自行决定使用哪一个策略类。</li>
+<li>策略模式将造成产生很多策略类，可以通过使用享元模式在一定程度上减少对象的数量。</li>
+</ol>
+</li>
+<li>代码<br>支付策略：分为现金支付、手机支付</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+// 抽象策略类
+class PaymentStrategy &#123;
+public:
+    virtual void pay(int amount) = 0;
+    virtual ~PaymentStrategy() = default;
+&#125;;
+
+// 具体策略类
+class CreaditCardPayment : public PaymentStrategy &#123;
+public:
+    void pay(int amount) override &#123;
+        std::cout &lt;&lt; &quot;使用信用卡支付了&quot; &lt;&lt; amount &lt;&lt; &quot;元。&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+class CashPayment : public PaymentStrategy &#123;
+public:
+    void pay(int amount) override &#123;
+        std::cout &lt;&lt; &quot;使用现金支付了&quot; &lt;&lt; amount &lt;&lt; &quot;元。&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 环境类
+class PaymentContext &#123;
+private:
+    std::unique_ptr&lt;PaymentStrategy&gt; _strategy;
+public:
+    void setPaymentStrategy(std::unique_ptr&lt;PaymentStrategy&gt; strategy) &#123;
+        _strategy = std::move(strategy);
+    &#125;
+    void executePayment(int amount) &#123;
+        if (_strategy) &#123;
+            _strategy-&gt;pay(amount);
+        &#125;
+        else &#123;
+            std::cout &lt;&lt; &quot;未指定支付方式。&quot; &lt;&lt; std::endl;
+        &#125;
+    &#125;
+&#125;;
+
+int main() &#123;
+    PaymentContext context;
+    context.setPaymentStrategy(std::make_unique&lt;CreaditCardPayment&gt;());
+    context.executePayment(100);
+    context.setPaymentStrategy(std::make_unique&lt;CashPayment&gt;());
+    context.executePayment(500);
+    return 0;
+&#125;
+</code></pre>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/12/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
     <a href="/2024/09/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/">
         <h2 class="post-title">观察者模式</h2>
     </a>
@@ -332,7 +453,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
         </span>
         
     </div>
@@ -727,8 +848,8 @@ int main() &#123;
 </div>
 
 <div class="post">
-    <a href="/2024/09/12/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
-        <h2 class="post-title">单例模式</h2>
+    <a href="/2024/09/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%9F%BA%E7%A1%80/">
+        <h2 class="post-title">设计模式基础</h2>
     </a>
     <div class="category-and-date">
         
@@ -746,6 +867,109 @@ int main() &#123;
                 <i class="fa-solid fa-calendar fa-fw"></i>
             </span>
             2024/9/12
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            <p>设计模式原则、分类、优点…</p>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%9F%BA%E7%A1%80/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
+    <a href="/2024/09/12/epoll/">
+        <h2 class="post-title">epoll</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/12
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            <p>常用的异步I&#x2F;0管理机制</p>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/epoll/" style="color: #ffa2c4">epoll</a>
+        </span>
+        
+        <span class="tag">
+            
+            <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #ff7d73">网络编程</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/12/epoll/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
+    <a href="/2024/08/15/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+        <h2 class="post-title">单例模式</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/8/15
         </span>
         
         
@@ -850,114 +1074,11 @@ Singleton* Singleton::_instance = nullptr;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
         </span>
         
     </div>
-    <a href="/2024/09/12/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
-</div>
-
-<div class="post">
-    <a href="/2024/09/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%9F%BA%E7%A1%80/">
-        <h2 class="post-title">设计模式基础</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/STUDY/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                STUDY
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2024/9/12
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <p>设计模式原则、分类、优点…</p>
-
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
-        </span>
-        
-    </div>
-    <a href="/2024/09/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%9F%BA%E7%A1%80/" class="go-post">阅读全文</a>
-</div>
-
-<div class="post">
-    <a href="/2024/09/12/epoll/">
-        <h2 class="post-title">epoll</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/STUDY/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                STUDY
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2024/9/12
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <p>常用的异步I&#x2F;0管理机制</p>
-
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/epoll/" style="color: #ffa2c4">epoll</a>
-        </span>
-        
-        <span class="tag">
-            
-            <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #00a596">网络编程</a>
-        </span>
-        
-    </div>
-    <a href="/2024/09/12/epoll/" class="go-post">阅读全文</a>
+    <a href="/2024/08/15/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
 </div>
 
 
