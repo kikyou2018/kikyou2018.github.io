@@ -1,0 +1,573 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>简单工厂、工厂方法与抽象工厂 | Switch冇不才的博客</title>
+    <meta name="author" content="switch冇不才" />
+    <meta name="description" content="LIFE AND STUDY" />
+    <meta name="keywords" content="" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <link rel="icon" href="/images/avatar.jpg" />
+    <link rel="preconnect" href="https://s4.zstatic.net" />
+<script src="https://s4.zstatic.net/ajax/libs/vue/3.3.7/vue.global.prod.min.js"></script>
+<link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.cn" />
+<link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin />
+<link
+    rel="stylesheet"
+    href="https://fonts.googleapis.cn/css2?family=Fira+Code:wght@400;500;600;700&family=Lexend:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap"
+/>
+<script> const mixins = {}; </script>
+
+
+<script src="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://s4.zstatic.net/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/styles/vs.min.css"
+/>
+<script src="/js/lib/highlight.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" />
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body>
+    <div id="layout">
+        <transition name="fade">
+            <div id="loading" v-show="loading">
+                <div id="loading-circle">
+                    <h2>LOADING</h2>
+                    <p>加载过慢请开启缓存 浏览器默认开启</p>
+                    <img src="/images/loading.gif" />
+                </div>
+            </div>
+        </transition>
+        <div id="menu" :class="{ hidden: hiddenMenu, 'menu-color': menuColor}">
+    <nav id="desktop-menu">
+        <a class="title" href="/">
+            <span>SWITCH冇不才的博客</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;Home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;Schedule</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;Archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;Categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;Tags</span>
+        </a>
+        
+    </nav>
+    <nav id="mobile-menu">
+        <div class="title" @click="showMenuItems = !showMenuItems">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;SWITCH冇不才的博客</span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="showMenuItems">
+                
+                <a href="/">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-house fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Home</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-id-card fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Schedule</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-box-archive fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Archives</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-bookmark fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Categories</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-tags fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Tags</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </nav>
+</div>
+<transition name="fade">
+    <div id="menu-curtain" @click="showMenuItems = !showMenuItems" v-show="showMenuItems"></div>
+</transition>
+
+        <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
+            <div class="article">
+    <div>
+        <h1>简单工厂、工厂方法与抽象工厂</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/12
+        </span>
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">
+                    设计模式
+                </a>
+            </span>
+            
+        </span>
+        
+    </div>
+    
+    <div class="content" v-pre>
+        <p>简单工厂模式、工厂方法模式、抽象工厂模式均属于创建型模式。</p>
+<h4 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h4><ol>
+<li>主要组成<ol>
+<li>工厂类：负责实现创建所有实例的内部逻辑，通常提供一个静态方法，根据传入的参数类型来决定初始化哪种具体类的对象。</li>
+<li>抽象产品类：定义了产品的公共接口。</li>
+<li>具体产品类</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>封装对象创建。工厂类含有必要的判断逻辑，可以决定在什么时候创建哪一个产品类的实例，客户端可以免除直接创建产品对象的责任，而仅仅“消费产品”；同时客户端无需知道所创建的具体产品类的类名，只需要知道具体产品类所对应的参数即可。（是否关心，主要看main函数创建时，是否回根据用户的目的进行工厂类、创建方法、返回对象的选择）</li>
+<li>可扩展性：通过引入配置文件，可以在不修改任何客户端代码的情况先更换和增加新的具体产品类。</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>不符合开放封闭原则：每增加一种产品，都要修改工厂类的实现。</li>
+<li>不符合单一职责原则：工厂类集中了所有对象的创建逻辑，职责较重，导致维护和管理困难。</li>
+</ol>
+</li>
+<li>代码<br>生产果汁，客户端告诉工厂是什么水果，工厂负责生产果汁。</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+// 抽象产品类-果汁
+class Juice &#123;
+public:
+    Juice(int sweetness) : _sweetness(sweetness) &#123;&#125;;
+    virtual ~Juice() = default;
+    virtual void showLabel() = 0;
+protected:
+    int _sweetness;     // 甜度
+&#125;;
+
+// 具体产品类，苹果果汁、橙汁
+class AppleJuice : public Juice &#123;
+public:
+    AppleJuice(int sweetness) : Juice(sweetness) &#123;&#125;
+    virtual void showLabel() override &#123;
+        std::cout &lt;&lt; &quot;This is apple juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+class OrangeJuice : public Juice &#123;
+public:
+    OrangeJuice(int sweetness) : Juice(sweetness) &#123;&#125;
+    virtual void showLabel() override &#123;
+        std::cout &lt;&lt; &quot;This is orange juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 工厂类
+class JuiceFactory &#123;
+public:
+    static std::unique_ptr&lt;Juice&gt; product(const std::string&amp; fruit) &#123;
+        if (fruit == &quot;apple&quot;) &#123;
+            return std::make_unique&lt;AppleJuice&gt;(10);
+        &#125;
+        else if (fruit == &quot;orange&quot;) &#123;
+            return std::make_unique&lt;OrangeJuice&gt;(20);
+        &#125;
+        else return nullptr;
+    &#125;
+&#125;;
+
+int main() &#123;
+    auto product_0 = JuiceFactory::product(&quot;orange&quot;);
+    auto product_1 = JuiceFactory::product(&quot;apple&quot;);
+    if (product_0) &#123;
+        product_0-&gt;showLabel();
+    &#125;
+    if (product_1) &#123;
+        product_1-&gt;showLabel();
+    &#125;
+    return 0;
+&#125;
+</code></pre>
+<ol start="5">
+<li>应用</li>
+</ol>
+<ul>
+<li>JDK类库</li>
+<li>Java加密技术</li>
+</ul>
+<h4 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h4><p>和简单工厂模式不同，为了解决简单工厂模式中工厂的职责复杂且不符合开放封闭原则。工厂方法模式将工厂类设置为一个抽象工厂类和若干个具体工厂类，之后增加具体产品类的时候只需要增加一个对应的具体工厂类即可，不需要对抽象工厂类进行更改。更见符合单一职责原则和开放封闭原则。</p>
+<ol>
+<li>主要组成<ol>
+<li>抽象产品</li>
+<li>具体产品</li>
+<li>抽象工厂</li>
+<li>具体工厂</li>
+</ol>
+</li>
+<li>优点：<ol>
+<li>用户只需要关心所需产品对应的工厂，无需关心创建细节，无需知道具体产品类的类名。</li>
+<li>基于工厂角色和产品角色的多态性设计时工厂方法模式的关键。</li>
+<li>扩展性：在系统中加入新产品时，无须修改抽象工厂和抽象产品提供的接口，无须修改客户端，也无须修改其他的具体工厂和具体产品，而只要添加一个具体工厂和具体产品就可以了。</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>添加新产品时，需要编写新的具体产品类和具体工厂类，类的个数成对增加。</li>
+<li>由于考虑到系统的可扩展性，需要引入抽象层，在客户端代码中均使用抽象层进行定义，增加了系统的抽象性和理解难度，且在实现时可能需要用到DOM、反射等技术，增加了系统的实现难度。</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;  // 包含智能指针的头文件
+
+class Juice &#123;
+public:
+    Juice(int sweetness) : _sweetness(sweetness) &#123;&#125;;
+    virtual ~Juice() = default;
+    virtual void showLabel() = 0;
+protected:
+    int _sweetness;     // 甜度
+&#125;;
+
+// 具体产品类，苹果果汁、橙汁
+class AppleJuice : public Juice &#123;
+public:
+    AppleJuice(int sweetness) : Juice(sweetness) &#123;&#125;
+    virtual void showLabel() override &#123;
+        std::cout &lt;&lt; &quot;This is apple juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+class OrangeJuice : public Juice &#123;
+public:
+    OrangeJuice(int sweetness) : Juice(sweetness) &#123;&#125;
+    virtual void showLabel() override &#123;
+        std::cout &lt;&lt; &quot;This is orange juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 工厂类
+class JuiceFactory &#123;
+public:
+    virtual ~JuiceFactory() = default;
+    virtual std::unique_ptr&lt;Juice&gt; product() = 0;  // 返回智能指针
+&#125;;
+
+// 具体工厂类
+class AppleJuiceFactory : public JuiceFactory &#123;
+public:
+    virtual std::unique_ptr&lt;Juice&gt; product() override &#123;
+        return std::make_unique&lt;AppleJuice&gt;(10);
+    &#125;
+&#125;;
+
+class OrangeJuiceFactory : public JuiceFactory &#123;
+public:
+    virtual std::unique_ptr&lt;Juice&gt; product() override &#123;
+        return std::make_unique&lt;OrangeJuice&gt;(20);
+    &#125;
+&#125;;
+
+int main() &#123;
+    // 使用智能指针管理工厂的生命周期
+    std::unique_ptr&lt;JuiceFactory&gt; apple_juice_factory = std::make_unique&lt;AppleJuiceFactory&gt;();
+    std::unique_ptr&lt;JuiceFactory&gt; orange_juice_factory = std::make_unique&lt;OrangeJuiceFactory&gt;();
+
+    // 使用智能指针管理产品的生命周期
+    std::unique_ptr&lt;Juice&gt; product_0 = apple_juice_factory-&gt;product();
+    std::unique_ptr&lt;Juice&gt; product_1 = orange_juice_factory-&gt;product();
+
+    product_0-&gt;showLabel();
+    product_1-&gt;showLabel();
+
+    return 0;
+&#125;
+</code></pre>
+<h4 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h4><p>对于上面的果汁的例子，一瓶果汁可以看作是由果汁本体、瓶子、标签组成。苹果果汁和橙汁的果汁本体和标签不同，但是瓶子可能是完全相同的。为了增加代码复用，且降低一个产品内部组件之间的耦合性（比如使用新的瓶子，不用更改苹果汁或橙汁的整个类的实现）。使用抽象工厂模式可以实现上面的功能。抽象工厂模式提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类。抽象工厂模式又称为Kit模式，属于创建型模式。</p>
+<ol>
+<li>主要组成<ol>
+<li>抽象组件类</li>
+<li>具体组件类</li>
+<li>抽象产品类</li>
+<li>具体产品类</li>
+<li>抽象工厂类</li>
+<li>具体工厂类<br>虽然上面列出了这么的类，但是具体实现还要看是否需要对应的抽象基类。</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>抽象工厂模式隔离了具体类的生成，使得客户端并不需要知道什么被创建。由于这种隔离，更换一个具体工厂就变得相对容易。所有的具体工厂都实现了抽象工厂定义的那些公共接口，因此只需改变具体工厂的实例，就可以在某种程度上改变整个软件系统的行为。另外，应用抽象工厂模式可以实现高内聚低耦合的设计目的。</li>
+<li>增加新的具体工厂和产品组很方便，无需更改已有系统，符合开放封闭原则。</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>在添加新的产品对象时，难以扩展抽象工厂来生产新种类的产品，这是因为在抽象工厂角色中规定了所有可能被创建的产品集合，要支持新种类的产品就意味着要对该接口进行扩展，而这将涉及到对抽象工厂角色及其所有子类的修改，显然会带来较大的不便。</li>
+<li>开闭原则的倾斜性（增加新的工厂和产品族容易，增加新的产品等级结构麻烦）。</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+// 抽象产品：标签
+class Label &#123;
+public:
+    virtual ~Label() = default;
+    virtual void showLabel() = 0;
+&#125;;
+
+// 具体产品：红色标签
+class RedLabel : public Label &#123;
+public:
+    virtual void showLabel() override &#123;
+        std::cout &lt;&lt; &quot;The label is red.&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 具体产品：黄色标签
+class YellowLabel : public Label &#123;
+public:
+    virtual void showLabel() override &#123;
+        std::cout &lt;&lt; &quot;The label is yellow.&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 抽象产品：瓶子
+class Bottle &#123;
+public: 
+    virtual ~Bottle() = default;
+    virtual void showBottle() = 0;
+&#125;;
+
+// 具体产品：大瓶子
+class BigBottle : public Bottle&#123;
+public:
+    void showBottle() override &#123;
+        std::cout &lt;&lt; &quot;The bottle&#39;s volume is 1000 ml.&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 具体产品：小瓶子
+class TinyBottle : public Bottle &#123;
+public:
+    void showBottle() override &#123;
+        std::cout &lt;&lt; &quot;The bottle&#39;s volume is 350 ml.&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 抽象产品：果汁
+class Juice &#123;
+public:
+    virtual ~Juice() = default;
+    virtual void showInfo() = 0;
+&#125;;
+
+// 具体产品：苹果汁
+class AppleJuice : public Juice &#123;
+private:
+    int _sweetness;
+    std::unique_ptr&lt;Label&gt; _label;
+    std::unique_ptr&lt;Bottle&gt; _bottle;
+public:
+    AppleJuice(int sweetness, std::unique_ptr&lt;Label&gt; label, std::unique_ptr&lt;Bottle&gt; bottle)
+        : _sweetness(sweetness), _label(std::move(label)), _bottle(std::move(bottle)) &#123;&#125;
+
+    virtual void showInfo() override &#123;
+        std::cout &lt;&lt; &quot;This is apple juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
+        _label-&gt;showLabel();
+        _bottle-&gt;showBottle();
+    &#125;
+&#125;;
+
+// 具体产品：橙汁
+class OrangeJuice : public Juice &#123;
+private:
+    int _sweetness;
+    std::unique_ptr&lt;Label&gt; _label;
+    std::unique_ptr&lt;Bottle&gt; _bottle;
+public:
+    OrangeJuice(int sweetness, std::unique_ptr&lt;Label&gt; label, std::unique_ptr&lt;Bottle&gt; bottle)
+        : _sweetness(sweetness), _label(std::move(label)), _bottle(std::move(bottle)) &#123;&#125;
+
+    virtual void showInfo() override &#123;
+        std::cout &lt;&lt; &quot;This is orange juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
+        _label-&gt;showLabel();
+        _bottle-&gt;showBottle();
+    &#125;
+&#125;;
+
+// 抽象工厂类
+class JuiceFactory &#123;
+public:
+    virtual ~JuiceFactory() = default;
+    virtual std::unique_ptr&lt;Label&gt; createLabel() = 0;
+    virtual std::unique_ptr&lt;Bottle&gt; createBottle() = 0;
+    virtual std::unique_ptr&lt;Juice&gt; product() = 0;
+&#125;;
+
+// 具体工厂类：生产小瓶红标签苹果汁
+class AppleJuiceFactory_tiny_red : public JuiceFactory &#123;
+public:
+    virtual std::unique_ptr&lt;Label&gt; createLabel() override &#123;
+        return std::make_unique&lt;RedLabel&gt;();
+    &#125;
+
+    virtual std::unique_ptr&lt;Bottle&gt; createBottle() override &#123;
+        return std::make_unique&lt;TinyBottle&gt;();
+    &#125;
+
+    virtual std::unique_ptr&lt;Juice&gt; product() override &#123;
+        return std::make_unique&lt;AppleJuice&gt;(10, createLabel(), createBottle());
+    &#125;
+&#125;;
+
+// 具体工厂类：生产大瓶黄标签橙汁
+class OrangeJuiceFactory_yellow_big : public JuiceFactory &#123;
+public:
+    virtual std::unique_ptr&lt;Label&gt; createLabel() override &#123;
+        return std::make_unique&lt;YellowLabel&gt;();
+    &#125;
+
+    virtual std::unique_ptr&lt;Bottle&gt; createBottle() override &#123;
+        return std::make_unique&lt;BigBottle&gt;();
+    &#125;
+
+    virtual std::unique_ptr&lt;Juice&gt; product() override &#123;
+        return std::make_unique&lt;OrangeJuice&gt;(20, createLabel(), createBottle());
+    &#125;
+&#125;;
+
+int main() &#123;
+    std::unique_ptr&lt;JuiceFactory&gt; apple_juice_factory = std::make_unique&lt;AppleJuiceFactory_tiny_red&gt;();
+    std::unique_ptr&lt;JuiceFactory&gt; orange_juice_factory = std::make_unique&lt;OrangeJuiceFactory_yellow_big&gt;();
+
+    std::unique_ptr&lt;Juice&gt; product_0 = apple_juice_factory-&gt;product();
+    std::unique_ptr&lt;Juice&gt; product_1 = orange_juice_factory-&gt;product();
+
+    product_0-&gt;showInfo();
+    product_1-&gt;showInfo();
+
+    return 0;
+&#125;
+</code></pre>
+
+    </div>
+    
+    
+    
+    
+    
+    
+    
+</div>
+
+            <footer id="footer">
+    <div id="footer-wrap">
+        <div>
+            &copy;
+            2024 - 2024 Switch冇不才的博客
+            <span id="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            &commat;switch冇不才
+        </div>
+        <div>
+            Based on the <a target="_blank" rel="noopener" href="https://hexo.io">Hexo Engine</a> &amp;
+            <a target="_blank" rel="noopener" href="https://github.com/theme-particlex/hexo-theme-particlex">ParticleX Theme</a>
+        </div>
+        
+    </div>
+</footer>
+
+        </div>
+        
+    </div>
+    <script src="/js/main.js"></script>
+    
+    
+
+
+
+
+    
+</body>
+</html>
