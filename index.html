@@ -177,6 +177,231 @@
         
 
 <div class="post">
+    <a href="/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E6%9C%8D%E5%8A%A1%E7%AB%AF/">
+        <h2 class="post-title">Redis项目-服务端</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/13
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            <p>服务端处理流程为</p>
+<ol>
+<li>创建监听socket</li>
+<li>设置监听的最大挂起连接的队列长度</li>
+<li>将监听socket设置为非阻塞模式</li>
+<li>将监听socket添加到epoll进行管理</li>
+<li>调用epoll.wait()。如果是监听事件（fd &#x3D;&#x3D; serverSocket）</li>
+<li>将通信socke设置为非阻塞模式。将通信通信socket对应的handleClient函数添加到任务队列中。（改进的地方：将std::bind()改为lambda表达式，并将this改为shared_from_this，以确保RedisServer对象的生命周期在多线程环境中被正确管理。）（错误：对于单例而言，不需要shared_ptr）</li>
+</ol>
+<h4 id="handleClient-函数"><a href="#handleClient-函数" class="headerlink" title="handleClient()函数"></a>handleClient()函数</h4><p><strong>（这里服务端的通信socket的缓冲区每次接受的都是一条指令，假如说客户端发送的是set key1 value1.那么下面的std::vector<a href="std::string">std::string</a> tokens中存储的是set、key1、value1，然后command为set，对齐进行命令解析，解析之后，将tokens发给commandParser，进行处理。）</strong></p>
+<ol>
+<li>首先创建指令队列std::queue<a href="std::string">std::string</a> commandQueue;</li>
+<li>创建bool变量用来指示是否开启了事务，是否进行回滚。bool startMulti &#x3D; false;   bool fallback &#x3D; false;</li>
+<li>对于这个socket的缓冲区，不断读取缓冲区内容。每次从缓冲区中读取的内容存储到char buffer[2048]中，并buffer[bytesRead] &#x3D; ‘\0’;（这样做的目的：处理网络通信的时候，通常需要从套接字中读取数据并进行解析。当从套接字读取数据时，读取的数据并不会自动带终止符，因此需要手动添加一个终止符来确保可以被正确的解析为字符串。）</li>
+<li>将buffer中的内容复制到std::string receivedData中，然后使用std::istringstream构造函数接受这个字符串，创建一个可以从该字符串读取数据的输入流对象iss。之后就可以使用std::istringstream的成员函数来逐个读取字符串中的单词或数值。</li>
+<li>将receiveData中的各个string存储到std::vector<a href="std::string">std::string</a> tokens中。</li>
+<li>tokens非空。command &#x3D; tokens.front(); 定义std::string responseMessage;</li>
+<li>针对不同的命令进行不同的处理。分别进行设置responseMessage, send()<ol>
+<li>quit exit: stop, sendO()</li>
+<li>multi: 已开启，回复重复开启。未开启：定义一个std::queue<a href="std::string">std::string</a> empty; 执行std::swap(empty, commandQueue)[这里是为了清空commandQueue]，之后回复ok</li>
+<li>exec：首先判断事务是否开启。未开启，提示未开启。已开启：且！fallback，就调用executeTransaction()执行事务。 fallback提示错误</li>
+<li>discard：将startMulti、fallback设置为false，返回ok</li>
+<li>处理常规指令</li>
+</ol>
+<ul>
+<li>未开启事务：<ol>
+<li>解析command。commandParser &#x3D; flyweightFactory-&gt;getParser(command);</li>
+<li>解析正常。responseMessage &#x3D; commandParser-&gt;parse(tokens);</li>
+<li>发送响应消息回应客户端</li>
+</ol>
+</li>
+<li>开启事务<ol>
+<li>添加到事务队列commandQueue中（执行startMulti的时候已经清空commandQueue），解析错误的话，就将fallback设置为false（后续进行exec的时候，会提示错误）</li>
+<li>正常解析，将receivedData加入到commandQueue中，回复”QUEUE”。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>没有数据可读时，继续循环。</li>
+<li>将通信socket从epoll中删除</li>
+<li>关闭clientScoket。</li>
+</ol>
+<h4 id="executeTransaction-std-queuestd-string-commandsQueue-int-clientSocket"><a href="#executeTransaction-std-queuestd-string-commandsQueue-int-clientSocket" class="headerlink" title="executeTransaction(std::queuestd::string&amp;commandsQueue,int clientSocket)"></a>executeTransaction(std::queue<a href="std::string">std::string</a>&amp;commandsQueue,int clientSocket)</h4><ol>
+<li>定义一个std::vector<a href="std::string">std::string</a> responseMessagesList;用来存储所有的执行结果。</li>
+<li>循环(终止条件：命令列表为空)</li>
+<li>取出命令列表命令std::string receiveData。</li>
+<li>定义std::istringstream接受命令receiveData;</li>
+<li>将其放到tokens中</li>
+<li>command &#x3D; tokens.front()；</li>
+<li>当tokens非空时，进行单个命令的处理，特殊情况为quit exit multi exec。其它情况为常规处理：解析命令，然后使用解析结果处理tokens。</li>
+</ol>
+<p>上述代码存在的问题，通信socket并没有添加到epoll中进行管理。同时遍历epoll的时候也没有针对遍历到的是通信socket进行处理。<br>正确的做法：<br>如果是监听socket，创建通信socket，并将其添加到epoll实例中。<br>如果是通信socket，进行命令处理，如果不是事务模式，处理完socket缓冲区中的数据就结束。如果是事务模式，必须等待执行完exec才能结束handleClient()<br>执行事务的时候将所有回复都合并成一个string。</p>
+<p>项目中模块的经典实现：</p>
+<ol>
+<li>epoll管理</li>
+<li>任务队列</li>
+</ol>
+<p>目前尚未熟悉的部分：</p>
+<ol>
+<li>命令解析</li>
+<li>命令解析器的执行</li>
+</ol>
+<h4 id="享元模式工厂实现命令解析器"><a href="#享元模式工厂实现命令解析器" class="headerlink" title="享元模式工厂实现命令解析器"></a>享元模式工厂实现命令解析器</h4><p>class ParserFlyweightFactory<br><strong>成员变量</strong></p>
+<ol>
+<li>std::unordered_map&lt;std::string, std::shared_ptr<CommandParser>&gt; parserMaps; &#x2F;&#x2F;用来存储已经解析过的命令</li>
+<li>std::shared_ptr<CommandParser> createCommandParser(std::string command);    &#x2F;&#x2F; 解析命令<ul>
+<li>先判断是否是合法命令</li>
+<li>根据命令类型进行调用parserMaps</li>
+</ul>
+</li>
+<li>std::shared_ptr<CommandParser> getParser(std::string&amp; command);     &#x2F;&#x2F; 获取命令解析结果<ul>
+<li>如果在map中中都到了解析结果，返回。找不到就调用createCommandParser进行解析，并把解析结果放到map中。这里进行解析的过程仅仅是根据command让map中的键为”command“的值为对应的了个shared_ptr解析类的实例。</li>
+</ul>
+</li>
+</ol>
+<h4 id="命令解析器"><a href="#命令解析器" class="headerlink" title="命令解析器"></a>命令解析器</h4><ol>
+<li>基类为CommandParser，派生类为各个具体命令的解析类。</li>
+</ol>
+<pre><code class="cpp">class CommandParser &#123;
+protected:
+    static std::shared_ptr&lt;RedisHelper&gt; redisHelper;
+public:
+    static void setRedisHelper(std::shared_ptr&lt;RedisHelper&gt; helper) &#123; redisHelper = helper; &#125;
+    static std::shared_ptr&lt;RedisHelper&gt; getRedisHelper() &#123; return redisHelper; &#125;
+    virtual std::string parse(std::vector&lt;std::string&gt;&amp; tokens) = 0;
+&#125;;
+</code></pre>
+<ol start="2">
+<li>子类重写<code>std::string parse(std::vector&lt;std::string&gt;&amp; tokens)</code><ul>
+<li>对于SetParser::parse</li>
+</ul>
+<ol>
+<li>首先判断tokens.size()是否小于3，小于报错</li>
+<li>判断tokens.size()是否等于4，等于4说明有额外参数NX或者XX，返回redisHelper-&gt;set(tokens[1], tokens[2], NX)结果或者redisHelper-&gt;set(tokens[1], tokens[2], XX)结果。</li>
+<li>等于3就返回redisHelper-&gt;set(tokens[1], tokens[2])结果。</li>
+</ol>
+</li>
+</ol>
+<h4 id="RedisHelper"><a href="#RedisHelper" class="headerlink" title="RedisHelper"></a>RedisHelper</h4><p>主要负责对数据库进行操作</p>
+<ol>
+<li>成员变量&amp;函数：<ul>
+<li>std::string dataBaseIndex &#x3D; “0”;      &#x2F;&#x2F; 当前操作的数据库</li>
+<li>std::shared_ptr&lt;SkipList&lt;std::string, RedisValue&gt;&gt; redisDataBase &#x3D; std::make_shared&lt;SkipList&lt;std::string, RedisValue&gt;&gt;(); &#x2F;&#x2F; 当前操作的数据库，一个数据库对应一个跳表</li>
+<li>void loadData(std::string loadPath); &#x2F;&#x2F; 从文件中加载，加载需要操作的数据库文件。</li>
+<li>std::string getFilePath(); &#x2F;&#x2F; 得到当前数据库对应的文件路径</li>
+<li>std::string RedisHelper::select(int index);将当前操作的数据库的智能指针指向指定的数据库。方法是创建一个智能指针指向跳表，然后根据index的到数据库文件的地址，然后从文件中加载数据到智能指针指向跳表。调用SkipList的loadFile方法。</li>
+</ul>
+</li>
+</ol>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #ff7d73">网络编程</a>
+        </span>
+        
+        <span class="tag">
+            
+            <a href="/tags/Redis/" style="color: #00bcd4">Redis</a>
+        </span>
+        
+        <span class="tag">
+            
+            <a href="/tags/%E9%A1%B9%E7%9B%AE/" style="color: #ff7d73">项目</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E6%9C%8D%E5%8A%A1%E7%AB%AF/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
+    <a href="/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E5%AE%A2%E6%88%B7%E7%AB%AF/">
+        <h2 class="post-title">Redis项目-客户端</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/13
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #00a596">网络编程</a>
+        </span>
+        
+        <span class="tag">
+            
+            <a href="/tags/Redis/" style="color: #03a9f4">Redis</a>
+        </span>
+        
+        <span class="tag">
+            
+            <a href="/tags/%E9%A1%B9%E7%9B%AE/" style="color: #ffa2c4">项目</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E5%AE%A2%E6%88%B7%E7%AB%AF/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
     <a href="/2024/09/12/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/">
         <h2 class="post-title">责任链模式</h2>
     </a>
@@ -342,7 +567,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
         </span>
         
     </div>
@@ -626,7 +851,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
         </span>
         
     </div>
@@ -768,7 +993,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
         </span>
         
     </div>
@@ -916,7 +1141,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">设计模式</a>
         </span>
         
     </div>
@@ -1060,7 +1285,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
         </span>
         
     </div>
@@ -1329,561 +1554,11 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
         </span>
         
     </div>
     <a href="/2024/09/12/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
-</div>
-
-<div class="post">
-    <a href="/2024/09/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/">
-        <h2 class="post-title">观察者模式</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/STUDY/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                STUDY
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2024/9/12
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <p>观察者模式定义对象间的一种一对多依赖关系，使得每当一个对象状态发生改变时，其相关依赖对象皆得到通知并被自动更新。观察者模式又叫做发布-订阅模式。是一种对象行为模式。<br>重要性程度：5</p>
-<ol>
-<li>主要组成<ol>
-<li>抽象观察者</li>
-<li>具体观察者</li>
-<li>抽象目标</li>
-<li>具体目标</li>
-</ol>
-</li>
-<li>优点<ol>
-<li>可以实现表示层和数据逻辑层的分离，并定义了稳定的消息更新传递机制，抽象了更新接口，使得可以有各种各样不同的表示层作为具体观察者角色。</li>
-<li>观察者模式在观察目标和观察者之间建立一个抽象的耦合。</li>
-<li>观察者模式支持广播通信。</li>
-<li>观察者模式符合开闭原则</li>
-</ol>
-</li>
-<li>缺点<ol>
-<li>通知机制耗费时间</li>
-<li>如果存在循环依赖，会导致出现循环调用，可能导致系统崩溃。</li>
-</ol>
-</li>
-<li>代码</li>
-</ol>
-<pre><code class="cpp">#include &lt;memory&gt;
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-
-class Subject;
-// 抽象观察者
-class Observer : public std::enable_shared_from_this&lt;Observer&gt; &#123;
-public:
-    Observer(const std::string&amp; name) :_name(name) &#123;&#125;;
-    virtual ~Observer() = default;
-    virtual void update(const std::string&amp; message) = 0;
-    virtual void subscribe(std::shared_ptr&lt;Subject&gt; subject);
-    virtual void unsubscribe(std::shared_ptr&lt;Subject&gt; subject);
-protected:
-    std::string _name;
-    std::vector&lt;std::shared_ptr&lt;Subject&gt;&gt; subjects;
-&#125;;
-
-// 具体观察者
-class ConcreteObserver : public Observer &#123;
-public:
-    ConcreteObserver(const std::string&amp; name) : Observer(name) &#123;&#125;
-
-    void update(const std::string&amp; message) override &#123;
-        std::cout &lt;&lt; _name &lt;&lt; &quot; received message: &quot; &lt;&lt; message &lt;&lt; std::endl;
-    &#125;
-&#125;;
-// 抽象目标
-class Subject &#123;
-public:
-    virtual ~Subject() = default;
-    virtual void attach(std::shared_ptr&lt;Observer&gt; observer) = 0;
-    virtual void detach(std::shared_ptr&lt;Observer&gt; observer) = 0;
-    virtual void notify() = 0;
-&#125;;
-// 具体目标
-class ConcreteSubject : public Subject &#123;
-private:
-    std::vector&lt;std::shared_ptr&lt;Observer&gt;&gt; observers;
-    std::string _message;
-public:
-public:
-    void attach(std::shared_ptr&lt;Observer&gt; observer) override &#123;
-        observers.push_back(observer);
-    &#125;
-
-    void detach(std::shared_ptr&lt;Observer&gt; observer) override &#123;
-        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
-    &#125;
-
-    void notify() override &#123;
-        for (auto&amp; observer : observers) &#123;
-            observer-&gt;update(_message);  // 通知每个观察者
-        &#125;
-    &#125;
-
-    void createMessage(const std::string&amp; message) &#123;
-        _message = message;
-        notify();  // 当状态改变时，通知所有观察者
-    &#125;
-&#125;;
-
-void Observer::subscribe(std::shared_ptr&lt;Subject&gt; subject) &#123;
-    subjects.push_back(subject);
-    subject-&gt;attach(shared_from_this());
-&#125;
-void Observer::unsubscribe(std::shared_ptr&lt;Subject&gt; subject) &#123;
-    subjects.erase(std::remove(subjects.begin(), subjects.end(), subject), subjects.end());
-    subject-&gt;detach(shared_from_this());
-&#125;
-
-// 测试观察者模式
-int main() &#123;
-    std::shared_ptr&lt;ConcreteSubject&gt; subject = std::make_shared&lt;ConcreteSubject&gt;();
-
-    std::shared_ptr&lt;Observer&gt; observer1 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 1&quot;);
-    std::shared_ptr&lt;Observer&gt; observer2 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 2&quot;);
-    std::shared_ptr&lt;Observer&gt; observer3 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 3&quot;);
-
-    observer1-&gt;subscribe(subject);
-    observer2-&gt;subscribe(subject);
-    observer3-&gt;subscribe(subject);
-
-    subject-&gt;createMessage(&quot;Hello, Observers!&quot;);  // 向所有观察者发送消息
-
-    observer2-&gt;unsubscribe(subject);
-
-    subject-&gt;createMessage(&quot;Second message!&quot;);  // 发送另一条消息，只有剩下的观察者会接收到
-
-    return 0;
-&#125;
-</code></pre>
-
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">设计模式</a>
-        </span>
-        
-    </div>
-    <a href="/2024/09/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
-</div>
-
-<div class="post">
-    <a href="/2024/09/12/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E3%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82/">
-        <h2 class="post-title">简单工厂、工厂方法与抽象工厂</h2>
-    </a>
-    <div class="category-and-date">
-        
-        <span class="category">
-            <a href="/categories/STUDY/">
-                <span class="icon">
-                    <i class="fa-solid fa-bookmark fa-fw"></i>
-                </span>
-                STUDY
-            </a>
-        </span>
-        
-        <span class="date">
-            <span class="icon">
-                <i class="fa-solid fa-calendar fa-fw"></i>
-            </span>
-            2024/9/12
-        </span>
-        
-        
-    </div>
-    <div class="description">
-        <div class="content" v-pre>
-            
-            <p>简单工厂模式、工厂方法模式、抽象工厂模式均属于创建型模式。</p>
-<h4 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h4><ol>
-<li>主要组成<ol>
-<li>工厂类：负责实现创建所有实例的内部逻辑，通常提供一个静态方法，根据传入的参数类型来决定初始化哪种具体类的对象。</li>
-<li>抽象产品类：定义了产品的公共接口。</li>
-<li>具体产品类</li>
-</ol>
-</li>
-<li>优点<ol>
-<li>封装对象创建。工厂类含有必要的判断逻辑，可以决定在什么时候创建哪一个产品类的实例，客户端可以免除直接创建产品对象的责任，而仅仅“消费产品”；同时客户端无需知道所创建的具体产品类的类名，只需要知道具体产品类所对应的参数即可。（是否关心，主要看main函数创建时，是否回根据用户的目的进行工厂类、创建方法、返回对象的选择）</li>
-<li>可扩展性：通过引入配置文件，可以在不修改任何客户端代码的情况先更换和增加新的具体产品类。</li>
-</ol>
-</li>
-<li>缺点<ol>
-<li>不符合开放封闭原则：每增加一种产品，都要修改工厂类的实现。</li>
-<li>不符合单一职责原则：工厂类集中了所有对象的创建逻辑，职责较重，导致维护和管理困难。</li>
-</ol>
-</li>
-<li>代码<br>生产果汁，客户端告诉工厂是什么水果，工厂负责生产果汁。</li>
-</ol>
-<pre><code class="cpp">#include &lt;iostream&gt;
-#include &lt;memory&gt;
-#include &lt;string&gt;
-
-// 抽象产品类-果汁
-class Juice &#123;
-public:
-    Juice(int sweetness) : _sweetness(sweetness) &#123;&#125;;
-    virtual ~Juice() = default;
-    virtual void showLabel() = 0;
-protected:
-    int _sweetness;     // 甜度
-&#125;;
-
-// 具体产品类，苹果果汁、橙汁
-class AppleJuice : public Juice &#123;
-public:
-    AppleJuice(int sweetness) : Juice(sweetness) &#123;&#125;
-    virtual void showLabel() override &#123;
-        std::cout &lt;&lt; &quot;This is apple juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
-    &#125;
-&#125;;
-
-class OrangeJuice : public Juice &#123;
-public:
-    OrangeJuice(int sweetness) : Juice(sweetness) &#123;&#125;
-    virtual void showLabel() override &#123;
-        std::cout &lt;&lt; &quot;This is orange juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
-    &#125;
-&#125;;
-
-// 工厂类
-class JuiceFactory &#123;
-public:
-    static std::unique_ptr&lt;Juice&gt; product(const std::string&amp; fruit) &#123;
-        if (fruit == &quot;apple&quot;) &#123;
-            return std::make_unique&lt;AppleJuice&gt;(10);
-        &#125;
-        else if (fruit == &quot;orange&quot;) &#123;
-            return std::make_unique&lt;OrangeJuice&gt;(20);
-        &#125;
-        else return nullptr;
-    &#125;
-&#125;;
-
-int main() &#123;
-    auto product_0 = JuiceFactory::product(&quot;orange&quot;);
-    auto product_1 = JuiceFactory::product(&quot;apple&quot;);
-    if (product_0) &#123;
-        product_0-&gt;showLabel();
-    &#125;
-    if (product_1) &#123;
-        product_1-&gt;showLabel();
-    &#125;
-    return 0;
-&#125;
-</code></pre>
-<ol start="5">
-<li>应用</li>
-</ol>
-<ul>
-<li>JDK类库</li>
-<li>Java加密技术</li>
-</ul>
-<h4 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h4><p>和简单工厂模式不同，为了解决简单工厂模式中工厂的职责复杂且不符合开放封闭原则。工厂方法模式将工厂类设置为一个抽象工厂类和若干个具体工厂类，之后增加具体产品类的时候只需要增加一个对应的具体工厂类即可，不需要对抽象工厂类进行更改。更见符合单一职责原则和开放封闭原则。</p>
-<ol>
-<li>主要组成<ol>
-<li>抽象产品</li>
-<li>具体产品</li>
-<li>抽象工厂</li>
-<li>具体工厂</li>
-</ol>
-</li>
-<li>优点：<ol>
-<li>用户只需要关心所需产品对应的工厂，无需关心创建细节，无需知道具体产品类的类名。</li>
-<li>基于工厂角色和产品角色的多态性设计时工厂方法模式的关键。</li>
-<li>扩展性：在系统中加入新产品时，无须修改抽象工厂和抽象产品提供的接口，无须修改客户端，也无须修改其他的具体工厂和具体产品，而只要添加一个具体工厂和具体产品就可以了。</li>
-</ol>
-</li>
-<li>缺点<ol>
-<li>添加新产品时，需要编写新的具体产品类和具体工厂类，类的个数成对增加。</li>
-<li>由于考虑到系统的可扩展性，需要引入抽象层，在客户端代码中均使用抽象层进行定义，增加了系统的抽象性和理解难度，且在实现时可能需要用到DOM、反射等技术，增加了系统的实现难度。</li>
-</ol>
-</li>
-<li>代码</li>
-</ol>
-<pre><code class="cpp">#include &lt;iostream&gt;
-#include &lt;memory&gt;  // 包含智能指针的头文件
-
-class Juice &#123;
-public:
-    Juice(int sweetness) : _sweetness(sweetness) &#123;&#125;;
-    virtual ~Juice() = default;
-    virtual void showLabel() = 0;
-protected:
-    int _sweetness;     // 甜度
-&#125;;
-
-// 具体产品类，苹果果汁、橙汁
-class AppleJuice : public Juice &#123;
-public:
-    AppleJuice(int sweetness) : Juice(sweetness) &#123;&#125;
-    virtual void showLabel() override &#123;
-        std::cout &lt;&lt; &quot;This is apple juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
-    &#125;
-&#125;;
-
-class OrangeJuice : public Juice &#123;
-public:
-    OrangeJuice(int sweetness) : Juice(sweetness) &#123;&#125;
-    virtual void showLabel() override &#123;
-        std::cout &lt;&lt; &quot;This is orange juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
-    &#125;
-&#125;;
-
-// 工厂类
-class JuiceFactory &#123;
-public:
-    virtual ~JuiceFactory() = default;
-    virtual std::unique_ptr&lt;Juice&gt; product() = 0;  // 返回智能指针
-&#125;;
-
-// 具体工厂类
-class AppleJuiceFactory : public JuiceFactory &#123;
-public:
-    virtual std::unique_ptr&lt;Juice&gt; product() override &#123;
-        return std::make_unique&lt;AppleJuice&gt;(10);
-    &#125;
-&#125;;
-
-class OrangeJuiceFactory : public JuiceFactory &#123;
-public:
-    virtual std::unique_ptr&lt;Juice&gt; product() override &#123;
-        return std::make_unique&lt;OrangeJuice&gt;(20);
-    &#125;
-&#125;;
-
-int main() &#123;
-    // 使用智能指针管理工厂的生命周期
-    std::unique_ptr&lt;JuiceFactory&gt; apple_juice_factory = std::make_unique&lt;AppleJuiceFactory&gt;();
-    std::unique_ptr&lt;JuiceFactory&gt; orange_juice_factory = std::make_unique&lt;OrangeJuiceFactory&gt;();
-
-    // 使用智能指针管理产品的生命周期
-    std::unique_ptr&lt;Juice&gt; product_0 = apple_juice_factory-&gt;product();
-    std::unique_ptr&lt;Juice&gt; product_1 = orange_juice_factory-&gt;product();
-
-    product_0-&gt;showLabel();
-    product_1-&gt;showLabel();
-
-    return 0;
-&#125;
-</code></pre>
-<h4 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h4><p>对于上面的果汁的例子，一瓶果汁可以看作是由果汁本体、瓶子、标签组成。苹果果汁和橙汁的果汁本体和标签不同，但是瓶子可能是完全相同的。为了增加代码复用，且降低一个产品内部组件之间的耦合性（比如使用新的瓶子，不用更改苹果汁或橙汁的整个类的实现）。使用抽象工厂模式可以实现上面的功能。抽象工厂模式提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类。抽象工厂模式又称为Kit模式，属于创建型模式。</p>
-<ol>
-<li>主要组成<ol>
-<li>抽象组件类</li>
-<li>具体组件类</li>
-<li>抽象产品类</li>
-<li>具体产品类</li>
-<li>抽象工厂类</li>
-<li>具体工厂类<br>虽然上面列出了这么的类，但是具体实现还要看是否需要对应的抽象基类。</li>
-</ol>
-</li>
-<li>优点<ol>
-<li>抽象工厂模式隔离了具体类的生成，使得客户端并不需要知道什么被创建。由于这种隔离，更换一个具体工厂就变得相对容易。所有的具体工厂都实现了抽象工厂定义的那些公共接口，因此只需改变具体工厂的实例，就可以在某种程度上改变整个软件系统的行为。另外，应用抽象工厂模式可以实现高内聚低耦合的设计目的。</li>
-<li>增加新的具体工厂和产品组很方便，无需更改已有系统，符合开放封闭原则。</li>
-</ol>
-</li>
-<li>缺点<ol>
-<li>在添加新的产品对象时，难以扩展抽象工厂来生产新种类的产品，这是因为在抽象工厂角色中规定了所有可能被创建的产品集合，要支持新种类的产品就意味着要对该接口进行扩展，而这将涉及到对抽象工厂角色及其所有子类的修改，显然会带来较大的不便。</li>
-<li>开闭原则的倾斜性（增加新的工厂和产品族容易，增加新的产品等级结构麻烦）。</li>
-</ol>
-</li>
-<li>代码</li>
-</ol>
-<pre><code class="cpp">#include &lt;iostream&gt;
-#include &lt;memory&gt;
-
-// 抽象产品：标签
-class Label &#123;
-public:
-    virtual ~Label() = default;
-    virtual void showLabel() = 0;
-&#125;;
-
-// 具体产品：红色标签
-class RedLabel : public Label &#123;
-public:
-    virtual void showLabel() override &#123;
-        std::cout &lt;&lt; &quot;The label is red.&quot; &lt;&lt; std::endl;
-    &#125;
-&#125;;
-
-// 具体产品：黄色标签
-class YellowLabel : public Label &#123;
-public:
-    virtual void showLabel() override &#123;
-        std::cout &lt;&lt; &quot;The label is yellow.&quot; &lt;&lt; std::endl;
-    &#125;
-&#125;;
-
-// 抽象产品：瓶子
-class Bottle &#123;
-public: 
-    virtual ~Bottle() = default;
-    virtual void showBottle() = 0;
-&#125;;
-
-// 具体产品：大瓶子
-class BigBottle : public Bottle&#123;
-public:
-    void showBottle() override &#123;
-        std::cout &lt;&lt; &quot;The bottle&#39;s volume is 1000 ml.&quot; &lt;&lt; std::endl;
-    &#125;
-&#125;;
-
-// 具体产品：小瓶子
-class TinyBottle : public Bottle &#123;
-public:
-    void showBottle() override &#123;
-        std::cout &lt;&lt; &quot;The bottle&#39;s volume is 350 ml.&quot; &lt;&lt; std::endl;
-    &#125;
-&#125;;
-
-// 抽象产品：果汁
-class Juice &#123;
-public:
-    virtual ~Juice() = default;
-    virtual void showInfo() = 0;
-&#125;;
-
-// 具体产品：苹果汁
-class AppleJuice : public Juice &#123;
-private:
-    int _sweetness;
-    std::unique_ptr&lt;Label&gt; _label;
-    std::unique_ptr&lt;Bottle&gt; _bottle;
-public:
-    AppleJuice(int sweetness, std::unique_ptr&lt;Label&gt; label, std::unique_ptr&lt;Bottle&gt; bottle)
-        : _sweetness(sweetness), _label(std::move(label)), _bottle(std::move(bottle)) &#123;&#125;
-
-    virtual void showInfo() override &#123;
-        std::cout &lt;&lt; &quot;This is apple juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
-        _label-&gt;showLabel();
-        _bottle-&gt;showBottle();
-    &#125;
-&#125;;
-
-// 具体产品：橙汁
-class OrangeJuice : public Juice &#123;
-private:
-    int _sweetness;
-    std::unique_ptr&lt;Label&gt; _label;
-    std::unique_ptr&lt;Bottle&gt; _bottle;
-public:
-    OrangeJuice(int sweetness, std::unique_ptr&lt;Label&gt; label, std::unique_ptr&lt;Bottle&gt; bottle)
-        : _sweetness(sweetness), _label(std::move(label)), _bottle(std::move(bottle)) &#123;&#125;
-
-    virtual void showInfo() override &#123;
-        std::cout &lt;&lt; &quot;This is orange juice, its sweetness is &quot; &lt;&lt; _sweetness &lt;&lt; &quot;.&quot; &lt;&lt; std::endl;
-        _label-&gt;showLabel();
-        _bottle-&gt;showBottle();
-    &#125;
-&#125;;
-
-// 抽象工厂类
-class JuiceFactory &#123;
-public:
-    virtual ~JuiceFactory() = default;
-    virtual std::unique_ptr&lt;Label&gt; createLabel() = 0;
-    virtual std::unique_ptr&lt;Bottle&gt; createBottle() = 0;
-    virtual std::unique_ptr&lt;Juice&gt; product() = 0;
-&#125;;
-
-// 具体工厂类：生产小瓶红标签苹果汁
-class AppleJuiceFactory_tiny_red : public JuiceFactory &#123;
-public:
-    virtual std::unique_ptr&lt;Label&gt; createLabel() override &#123;
-        return std::make_unique&lt;RedLabel&gt;();
-    &#125;
-
-    virtual std::unique_ptr&lt;Bottle&gt; createBottle() override &#123;
-        return std::make_unique&lt;TinyBottle&gt;();
-    &#125;
-
-    virtual std::unique_ptr&lt;Juice&gt; product() override &#123;
-        return std::make_unique&lt;AppleJuice&gt;(10, createLabel(), createBottle());
-    &#125;
-&#125;;
-
-// 具体工厂类：生产大瓶黄标签橙汁
-class OrangeJuiceFactory_yellow_big : public JuiceFactory &#123;
-public:
-    virtual std::unique_ptr&lt;Label&gt; createLabel() override &#123;
-        return std::make_unique&lt;YellowLabel&gt;();
-    &#125;
-
-    virtual std::unique_ptr&lt;Bottle&gt; createBottle() override &#123;
-        return std::make_unique&lt;BigBottle&gt;();
-    &#125;
-
-    virtual std::unique_ptr&lt;Juice&gt; product() override &#123;
-        return std::make_unique&lt;OrangeJuice&gt;(20, createLabel(), createBottle());
-    &#125;
-&#125;;
-
-int main() &#123;
-    std::unique_ptr&lt;JuiceFactory&gt; apple_juice_factory = std::make_unique&lt;AppleJuiceFactory_tiny_red&gt;();
-    std::unique_ptr&lt;JuiceFactory&gt; orange_juice_factory = std::make_unique&lt;OrangeJuiceFactory_yellow_big&gt;();
-
-    std::unique_ptr&lt;Juice&gt; product_0 = apple_juice_factory-&gt;product();
-    std::unique_ptr&lt;Juice&gt; product_1 = orange_juice_factory-&gt;product();
-
-    product_0-&gt;showInfo();
-    product_1-&gt;showInfo();
-
-    return 0;
-&#125;
-</code></pre>
-
-            
-        </div>
-    </div>
-    <div class="post-tags">
-        
-        <span class="icon">
-            <i class="fa-solid fa-tags fa-fw"></i>
-        </span>
-        
-        
-        
-        <span class="tag">
-            
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
-        </span>
-        
-    </div>
-    <a href="/2024/09/12/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E3%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82/" class="go-post">阅读全文</a>
 </div>
 
 

@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>Redis项目-服务端 | Switch冇不才的博客</title>
+    <meta name="author" content="switch冇不才" />
+    <meta name="description" content="LIFE AND STUDY" />
+    <meta name="keywords" content="" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <link rel="icon" href="/images/avatar.jpg" />
+    <link rel="preconnect" href="https://s4.zstatic.net" />
+<script src="https://s4.zstatic.net/ajax/libs/vue/3.3.7/vue.global.prod.min.js"></script>
+<link rel="stylesheet" href="https://s4.zstatic.net/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.cn" />
+<link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin />
+<link
+    rel="stylesheet"
+    href="https://fonts.googleapis.cn/css2?family=Fira+Code:wght@400;500;600;700&family=Lexend:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap"
+/>
+<script> const mixins = {}; </script>
+
+
+<script src="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://s4.zstatic.net/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+<link
+    rel="stylesheet"
+    href="https://s4.zstatic.net/ajax/libs/highlight.js/11.9.0/styles/vs.min.css"
+/>
+<script src="/js/lib/highlight.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/main.css" />
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+<body>
+    <div id="layout">
+        <transition name="fade">
+            <div id="loading" v-show="loading">
+                <div id="loading-circle">
+                    <h2>LOADING</h2>
+                    <p>加载过慢请开启缓存 浏览器默认开启</p>
+                    <img src="/images/loading.gif" />
+                </div>
+            </div>
+        </transition>
+        <div id="menu" :class="{ hidden: hiddenMenu, 'menu-color': menuColor}">
+    <nav id="desktop-menu">
+        <a class="title" href="/">
+            <span>SWITCH冇不才的博客</span>
+        </a>
+        
+        <a href="/">
+            <i class="fa-solid fa-house fa-fw"></i>
+            <span>&ensp;Home</span>
+        </a>
+        
+        <a href="/about">
+            <i class="fa-solid fa-id-card fa-fw"></i>
+            <span>&ensp;Schedule</span>
+        </a>
+        
+        <a href="/archives">
+            <i class="fa-solid fa-box-archive fa-fw"></i>
+            <span>&ensp;Archives</span>
+        </a>
+        
+        <a href="/categories">
+            <i class="fa-solid fa-bookmark fa-fw"></i>
+            <span>&ensp;Categories</span>
+        </a>
+        
+        <a href="/tags">
+            <i class="fa-solid fa-tags fa-fw"></i>
+            <span>&ensp;Tags</span>
+        </a>
+        
+    </nav>
+    <nav id="mobile-menu">
+        <div class="title" @click="showMenuItems = !showMenuItems">
+            <i class="fa-solid fa-bars fa-fw"></i>
+            <span>&emsp;SWITCH冇不才的博客</span>
+        </div>
+        <transition name="slide">
+            <div class="items" v-show="showMenuItems">
+                
+                <a href="/">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-house fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Home</div>
+                    </div>
+                </a>
+                
+                <a href="/about">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-id-card fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Schedule</div>
+                    </div>
+                </a>
+                
+                <a href="/archives">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-box-archive fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Archives</div>
+                    </div>
+                </a>
+                
+                <a href="/categories">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-bookmark fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Categories</div>
+                    </div>
+                </a>
+                
+                <a href="/tags">
+                    <div class="item">
+                        <div style="min-width: 20px; max-width: 50px; width: 10%">
+                            <i class="fa-solid fa-tags fa-fw"></i>
+                        </div>
+                        <div style="min-width: 100px; max-width: 150%; width: 20%">Tags</div>
+                    </div>
+                </a>
+                
+            </div>
+        </transition>
+    </nav>
+</div>
+<transition name="fade">
+    <div id="menu-curtain" @click="showMenuItems = !showMenuItems" v-show="showMenuItems"></div>
+</transition>
+
+        <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
+            <div class="article">
+    <div>
+        <h1>Redis项目-服务端</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/13
+        </span>
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #00a596">
+                    网络编程
+                </a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/Redis/" style="color: #ff7d73">
+                    Redis
+                </a>
+            </span>
+            
+            <span class="tag">
+                
+                <a href="/tags/%E9%A1%B9%E7%9B%AE/" style="color: #ffa2c4">
+                    项目
+                </a>
+            </span>
+            
+        </span>
+        
+    </div>
+    
+    <div class="content" v-pre>
+        <p>服务端处理流程为</p>
+<ol>
+<li>创建监听socket</li>
+<li>设置监听的最大挂起连接的队列长度</li>
+<li>将监听socket设置为非阻塞模式</li>
+<li>将监听socket添加到epoll进行管理</li>
+<li>调用epoll.wait()。如果是监听事件（fd &#x3D;&#x3D; serverSocket）</li>
+<li>将通信socke设置为非阻塞模式。将通信通信socket对应的handleClient函数添加到任务队列中。（改进的地方：将std::bind()改为lambda表达式，并将this改为shared_from_this，以确保RedisServer对象的生命周期在多线程环境中被正确管理。）（错误：对于单例而言，不需要shared_ptr）</li>
+</ol>
+<h4 id="handleClient-函数"><a href="#handleClient-函数" class="headerlink" title="handleClient()函数"></a>handleClient()函数</h4><p><strong>（这里服务端的通信socket的缓冲区每次接受的都是一条指令，假如说客户端发送的是set key1 value1.那么下面的std::vector<a href="std::string">std::string</a> tokens中存储的是set、key1、value1，然后command为set，对齐进行命令解析，解析之后，将tokens发给commandParser，进行处理。）</strong></p>
+<ol>
+<li>首先创建指令队列std::queue<a href="std::string">std::string</a> commandQueue;</li>
+<li>创建bool变量用来指示是否开启了事务，是否进行回滚。bool startMulti &#x3D; false;   bool fallback &#x3D; false;</li>
+<li>对于这个socket的缓冲区，不断读取缓冲区内容。每次从缓冲区中读取的内容存储到char buffer[2048]中，并buffer[bytesRead] &#x3D; ‘\0’;（这样做的目的：处理网络通信的时候，通常需要从套接字中读取数据并进行解析。当从套接字读取数据时，读取的数据并不会自动带终止符，因此需要手动添加一个终止符来确保可以被正确的解析为字符串。）</li>
+<li>将buffer中的内容复制到std::string receivedData中，然后使用std::istringstream构造函数接受这个字符串，创建一个可以从该字符串读取数据的输入流对象iss。之后就可以使用std::istringstream的成员函数来逐个读取字符串中的单词或数值。</li>
+<li>将receiveData中的各个string存储到std::vector<a href="std::string">std::string</a> tokens中。</li>
+<li>tokens非空。command &#x3D; tokens.front(); 定义std::string responseMessage;</li>
+<li>针对不同的命令进行不同的处理。分别进行设置responseMessage, send()<ol>
+<li>quit exit: stop, sendO()</li>
+<li>multi: 已开启，回复重复开启。未开启：定义一个std::queue<a href="std::string">std::string</a> empty; 执行std::swap(empty, commandQueue)[这里是为了清空commandQueue]，之后回复ok</li>
+<li>exec：首先判断事务是否开启。未开启，提示未开启。已开启：且！fallback，就调用executeTransaction()执行事务。 fallback提示错误</li>
+<li>discard：将startMulti、fallback设置为false，返回ok</li>
+<li>处理常规指令</li>
+</ol>
+<ul>
+<li>未开启事务：<ol>
+<li>解析command。commandParser &#x3D; flyweightFactory-&gt;getParser(command);</li>
+<li>解析正常。responseMessage &#x3D; commandParser-&gt;parse(tokens);</li>
+<li>发送响应消息回应客户端</li>
+</ol>
+</li>
+<li>开启事务<ol>
+<li>添加到事务队列commandQueue中（执行startMulti的时候已经清空commandQueue），解析错误的话，就将fallback设置为false（后续进行exec的时候，会提示错误）</li>
+<li>正常解析，将receivedData加入到commandQueue中，回复”QUEUE”。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>没有数据可读时，继续循环。</li>
+<li>将通信socket从epoll中删除</li>
+<li>关闭clientScoket。</li>
+</ol>
+<h4 id="executeTransaction-std-queuestd-string-commandsQueue-int-clientSocket"><a href="#executeTransaction-std-queuestd-string-commandsQueue-int-clientSocket" class="headerlink" title="executeTransaction(std::queuestd::string&amp;commandsQueue,int clientSocket)"></a>executeTransaction(std::queue<a href="std::string">std::string</a>&amp;commandsQueue,int clientSocket)</h4><ol>
+<li>定义一个std::vector<a href="std::string">std::string</a> responseMessagesList;用来存储所有的执行结果。</li>
+<li>循环(终止条件：命令列表为空)</li>
+<li>取出命令列表命令std::string receiveData。</li>
+<li>定义std::istringstream接受命令receiveData;</li>
+<li>将其放到tokens中</li>
+<li>command &#x3D; tokens.front()；</li>
+<li>当tokens非空时，进行单个命令的处理，特殊情况为quit exit multi exec。其它情况为常规处理：解析命令，然后使用解析结果处理tokens。</li>
+</ol>
+<p>上述代码存在的问题，通信socket并没有添加到epoll中进行管理。同时遍历epoll的时候也没有针对遍历到的是通信socket进行处理。<br>正确的做法：<br>如果是监听socket，创建通信socket，并将其添加到epoll实例中。<br>如果是通信socket，进行命令处理，如果不是事务模式，处理完socket缓冲区中的数据就结束。如果是事务模式，必须等待执行完exec才能结束handleClient()<br>执行事务的时候将所有回复都合并成一个string。</p>
+<p>项目中模块的经典实现：</p>
+<ol>
+<li>epoll管理</li>
+<li>任务队列</li>
+</ol>
+<p>目前尚未熟悉的部分：</p>
+<ol>
+<li>命令解析</li>
+<li>命令解析器的执行</li>
+</ol>
+<h4 id="享元模式工厂实现命令解析器"><a href="#享元模式工厂实现命令解析器" class="headerlink" title="享元模式工厂实现命令解析器"></a>享元模式工厂实现命令解析器</h4><p>class ParserFlyweightFactory<br><strong>成员变量</strong></p>
+<ol>
+<li>std::unordered_map&lt;std::string, std::shared_ptr<CommandParser>&gt; parserMaps; &#x2F;&#x2F;用来存储已经解析过的命令</li>
+<li>std::shared_ptr<CommandParser> createCommandParser(std::string command);    &#x2F;&#x2F; 解析命令<ul>
+<li>先判断是否是合法命令</li>
+<li>根据命令类型进行调用parserMaps</li>
+</ul>
+</li>
+<li>std::shared_ptr<CommandParser> getParser(std::string&amp; command);     &#x2F;&#x2F; 获取命令解析结果<ul>
+<li>如果在map中中都到了解析结果，返回。找不到就调用createCommandParser进行解析，并把解析结果放到map中。这里进行解析的过程仅仅是根据command让map中的键为”command“的值为对应的了个shared_ptr解析类的实例。</li>
+</ul>
+</li>
+</ol>
+<h4 id="命令解析器"><a href="#命令解析器" class="headerlink" title="命令解析器"></a>命令解析器</h4><ol>
+<li>基类为CommandParser，派生类为各个具体命令的解析类。</li>
+</ol>
+<pre><code class="cpp">class CommandParser &#123;
+protected:
+    static std::shared_ptr&lt;RedisHelper&gt; redisHelper;
+public:
+    static void setRedisHelper(std::shared_ptr&lt;RedisHelper&gt; helper) &#123; redisHelper = helper; &#125;
+    static std::shared_ptr&lt;RedisHelper&gt; getRedisHelper() &#123; return redisHelper; &#125;
+    virtual std::string parse(std::vector&lt;std::string&gt;&amp; tokens) = 0;
+&#125;;
+</code></pre>
+<ol start="2">
+<li>子类重写<code>std::string parse(std::vector&lt;std::string&gt;&amp; tokens)</code><ul>
+<li>对于SetParser::parse</li>
+</ul>
+<ol>
+<li>首先判断tokens.size()是否小于3，小于报错</li>
+<li>判断tokens.size()是否等于4，等于4说明有额外参数NX或者XX，返回redisHelper-&gt;set(tokens[1], tokens[2], NX)结果或者redisHelper-&gt;set(tokens[1], tokens[2], XX)结果。</li>
+<li>等于3就返回redisHelper-&gt;set(tokens[1], tokens[2])结果。</li>
+</ol>
+</li>
+</ol>
+<h4 id="RedisHelper"><a href="#RedisHelper" class="headerlink" title="RedisHelper"></a>RedisHelper</h4><p>主要负责对数据库进行操作</p>
+<ol>
+<li>成员变量&amp;函数：<ul>
+<li>std::string dataBaseIndex &#x3D; “0”;      &#x2F;&#x2F; 当前操作的数据库</li>
+<li>std::shared_ptr&lt;SkipList&lt;std::string, RedisValue&gt;&gt; redisDataBase &#x3D; std::make_shared&lt;SkipList&lt;std::string, RedisValue&gt;&gt;(); &#x2F;&#x2F; 当前操作的数据库，一个数据库对应一个跳表</li>
+<li>void loadData(std::string loadPath); &#x2F;&#x2F; 从文件中加载，加载需要操作的数据库文件。</li>
+<li>std::string getFilePath(); &#x2F;&#x2F; 得到当前数据库对应的文件路径</li>
+<li>std::string RedisHelper::select(int index);将当前操作的数据库的智能指针指向指定的数据库。方法是创建一个智能指针指向跳表，然后根据index的到数据库文件的地址，然后从文件中加载数据到智能指针指向跳表。调用SkipList的loadFile方法。</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+    
+    
+    
+    
+    
+    
+    
+</div>
+
+            <footer id="footer">
+    <div id="footer-wrap">
+        <div>
+            &copy;
+            2024 - 2024 Switch冇不才的博客
+            <span id="footer-icon">
+                <i class="fa-solid fa-font-awesome fa-fw"></i>
+            </span>
+            &commat;switch冇不才
+        </div>
+        <div>
+            Based on the <a target="_blank" rel="noopener" href="https://hexo.io">Hexo Engine</a> &amp;
+            <a target="_blank" rel="noopener" href="https://github.com/theme-particlex/hexo-theme-particlex">ParticleX Theme</a>
+        </div>
+        
+    </div>
+</footer>
+
+        </div>
+        
+    </div>
+    <script src="/js/main.js"></script>
+    
+    
+
+
+
+
+    
+</body>
+</html>
