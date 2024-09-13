@@ -162,11 +162,130 @@
             2024/9/12
         </span>
         
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00a596">
+                    设计模式
+                </a>
+            </span>
+            
+        </span>
         
     </div>
     
     <div class="content" v-pre>
-        
+        <p>重要性程度：4<br>某些情况下，一个客户不想或者不能直接引用一个对象，此时可以通过一个称为“代理”的第三者实现间接引用。代理对象可以在客户端和目标对象之间起到中介的作用，并且可以通过代理对象去掉客户不能看到的内容和服务或者添加客户需要的额外服务。主要目的是<strong>控制对对象的访问</strong>（涉及到<strong>对方法的重定向</strong>、<strong>访问控制权限</strong>、<strong>延迟加载</strong>等）</p>
+<ol>
+<li>主要组成<ol>
+<li>抽象主题</li>
+<li>代理主题</li>
+<li>真实主题</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>控制对象的访问</li>
+<li>延迟对象的初始化：虚拟代理可以延迟创建和初始化资源密集型对象，优化性能。</li>
+<li>保护真实对象</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>增加复杂性</li>
+<li>潜在的性能开销</li>
+</ol>
+</li>
+<li>应用<ol>
+<li>远程代理：用于访问位于远程服务器上的对象，通过代理对象屏蔽网络通信的复杂性。</li>
+<li>虚拟代理：用于优化系统性能，延迟加载或初始化较大的对象。</li>
+<li>保护代理：用于控制对对象的访问权限，例如根据用户角色或权限控制对象的使用。</li>
+<li>智能引用代理：用于对对象的引用增加一些智能操作，比如计数、日志记录、引用跟踪等。C++11的智能指针</li>
+</ol>
+</li>
+<li>代码<br>图像加载类，图片加载很耗时，使用代理延迟加载图片，知道需要时才加载。</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 抽象主题类
+class Image &#123;
+public:
+    virtual void display() = 0;  // 显示图片
+    virtual ~Image() = default;
+&#125;;
+
+// 真实主题类，负责加载并显示图片
+class RealImage : public Image &#123;
+private:
+    std::string filename;
+
+public:
+    RealImage(const std::string&amp; filename) : filename(filename) &#123;
+        loadFromDisk();
+    &#125;
+
+    void display() override &#123;
+        std::cout &lt;&lt; &quot;Displaying &quot; &lt;&lt; filename &lt;&lt; &quot;\n&quot;;
+    &#125;
+
+    // 模拟从磁盘加载图片的操作
+    void loadFromDisk() &#123;
+        std::cout &lt;&lt; &quot;Loading &quot; &lt;&lt; filename &lt;&lt; &quot; from disk...\n&quot;;
+    &#125;
+&#125;;
+
+// 代理类，控制对真实图片对象的访问
+class ProxyImage : public Image &#123;
+private:
+    RealImage* realImage = nullptr;
+    std::string filename;
+
+public:
+    ProxyImage(const std::string&amp; filename) : filename(filename) &#123;&#125;
+
+    // 代理类的 display 方法，只有在需要时才创建 RealImage
+    void display() override &#123;
+        if (realImage == nullptr) &#123;
+            realImage = new RealImage(filename);  // 延迟加载
+        &#125;
+        realImage-&gt;display();
+    &#125;
+
+    ~ProxyImage() &#123;
+        delete realImage;  // 释放真实对象
+    &#125;
+&#125;;
+
+// 客户端代码
+int main() &#123;
+    Image* image = new ProxyImage(&quot;test_image.jpg&quot;);
+
+    // 图片只在真正需要时才加载
+    std::cout &lt;&lt; &quot;Image will be displayed the first time:\n&quot;;
+    image-&gt;display();  // 第一次调用时加载图片
+
+    std::cout &lt;&lt; &quot;\nImage will be displayed again:\n&quot;;
+    image-&gt;display();  // 第二次调用时不再加载
+
+    delete image;  // 清理
+    return 0;
+&#125;
+</code></pre>
+
     </div>
     
     

@@ -172,10 +172,118 @@
         </span>
         
         
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">
+                    设计模式
+                </a>
+            </span>
+            
+        </span>
+        
     </div>
     
     <div class="content" v-pre>
-        
+        <p>重要性程度：5<br>外观模式：外部与一个子系统的通信必须通过一个统一的外观对象进行，为子系统中的一组接口提供一个一致的界面，外观模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。是一种对象结构型模式。</p>
+<ol>
+<li>主要组成<ol>
+<li>外观角色</li>
+<li>子系统角色</li>
+</ol>
+</li>
+<li>优点：<ol>
+<li>简化使用</li>
+<li>减少耦合：客户端和子系统之间的耦合度降低，子系统的修改不会影响客户端</li>
+<li>便于维护。子系统内部的变化不会影响到外观类和客户端之间的接口。</li>
+<li>分层解耦。外观模式可以划分系统的不同部分，使系统层次更加清晰。</li>
+</ol>
+</li>
+<li>缺点：<ol>
+<li>过度封装</li>
+<li>不符合开闭原则：如果要扩展外观类的功能，可能需要修改外观类的代码</li>
+</ol>
+</li>
+<li>代码<br>家庭影院系统，子系统：DVD播放器、音响、投影仪。使用外观模式封装这些复杂的系统，提供一个简单的接口让用户操作。</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+
+// 子系统1：DVD播放器
+class DVDPlayer &#123;
+public:
+    void on() &#123; std::cout &lt;&lt; &quot;DVD Player is On\n&quot;; &#125;
+    void off() &#123; std::cout &lt;&lt; &quot;DVD Player is Off\n&quot;; &#125;
+    void play() &#123; std::cout &lt;&lt; &quot;DVD is playing\n&quot;; &#125;
+&#125;;
+
+// 子系统2：音响系统
+class SoundSystem &#123;
+public:
+    void on() &#123; std::cout &lt;&lt; &quot;Sound System is On\n&quot;; &#125;
+    void off() &#123; std::cout &lt;&lt; &quot;Sound System is Off\n&quot;; &#125;
+    void setVolume(int level) &#123; std::cout &lt;&lt; &quot;Sound volume set to &quot; &lt;&lt; level &lt;&lt; &quot;\n&quot;; &#125;
+&#125;;
+
+// 子系统3：投影仪
+class Projector &#123;
+public:
+    void on() &#123; std::cout &lt;&lt; &quot;Projector is On\n&quot;; &#125;
+    void off() &#123; std::cout &lt;&lt; &quot;Projector is Off\n&quot;; &#125;
+    void setInput(std::string input) &#123; std::cout &lt;&lt; &quot;Projector input set to &quot; &lt;&lt; input &lt;&lt; &quot;\n&quot;; &#125;
+&#125;;
+
+// 外观类：家庭影院
+class HomeTheaterFacade &#123;
+private:
+    DVDPlayer* dvd;
+    SoundSystem* sound;
+    Projector* projector;
+
+public:
+    HomeTheaterFacade(DVDPlayer* dvd, SoundSystem* sound, Projector* projector) :
+        dvd(dvd), sound(sound), projector(projector) &#123;&#125;
+
+    // 提供统一接口简化操作
+    void watchMovie() &#123;
+        std::cout &lt;&lt; &quot;Get ready to watch a movie...\n&quot;;
+        projector-&gt;on();
+        projector-&gt;setInput(&quot;DVD&quot;);
+        sound-&gt;on();
+        sound-&gt;setVolume(10);
+        dvd-&gt;on();
+        dvd-&gt;play();
+    &#125;
+    void endMovie() &#123;
+        std::cout &lt;&lt; &quot;Shutting down the movie theater...\n&quot;;
+        dvd-&gt;off();
+        sound-&gt;off();
+        projector-&gt;off();
+    &#125;
+&#125;;
+
+int main() &#123;
+    // 创建子系统对象
+    DVDPlayer dvd;
+    SoundSystem sound;
+    Projector projector;
+
+    // 使用外观模式
+    HomeTheaterFacade homeTheater(&amp;dvd, &amp;sound, &amp;projector);
+
+    // 客户端通过外观类来操作复杂的子系统
+    homeTheater.watchMovie();
+    std::cout &lt;&lt; &quot;\n&quot;;
+    homeTheater.endMovie();
+
+    return 0;
+&#125;
+</code></pre>
+
     </div>
     
     

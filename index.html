@@ -342,7 +342,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">设计模式</a>
         </span>
         
     </div>
@@ -354,6 +354,15 @@ int main() &#123;
         <h2 class="post-title">代理模式</h2>
     </a>
     <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
         
         <span class="date">
             <span class="icon">
@@ -367,13 +376,117 @@ int main() &#123;
     <div class="description">
         <div class="content" v-pre>
             
-            
+            <p>重要性程度：4<br>某些情况下，一个客户不想或者不能直接引用一个对象，此时可以通过一个称为“代理”的第三者实现间接引用。代理对象可以在客户端和目标对象之间起到中介的作用，并且可以通过代理对象去掉客户不能看到的内容和服务或者添加客户需要的额外服务。主要目的是<strong>控制对对象的访问</strong>（涉及到<strong>对方法的重定向</strong>、<strong>访问控制权限</strong>、<strong>延迟加载</strong>等）</p>
+<ol>
+<li>主要组成<ol>
+<li>抽象主题</li>
+<li>代理主题</li>
+<li>真实主题</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>控制对象的访问</li>
+<li>延迟对象的初始化：虚拟代理可以延迟创建和初始化资源密集型对象，优化性能。</li>
+<li>保护真实对象</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>增加复杂性</li>
+<li>潜在的性能开销</li>
+</ol>
+</li>
+<li>应用<ol>
+<li>远程代理：用于访问位于远程服务器上的对象，通过代理对象屏蔽网络通信的复杂性。</li>
+<li>虚拟代理：用于优化系统性能，延迟加载或初始化较大的对象。</li>
+<li>保护代理：用于控制对对象的访问权限，例如根据用户角色或权限控制对象的使用。</li>
+<li>智能引用代理：用于对对象的引用增加一些智能操作，比如计数、日志记录、引用跟踪等。C++11的智能指针</li>
+</ol>
+</li>
+<li>代码<br>图像加载类，图片加载很耗时，使用代理延迟加载图片，知道需要时才加载。</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 抽象主题类
+class Image &#123;
+public:
+    virtual void display() = 0;  // 显示图片
+    virtual ~Image() = default;
+&#125;;
+
+// 真实主题类，负责加载并显示图片
+class RealImage : public Image &#123;
+private:
+    std::string filename;
+
+public:
+    RealImage(const std::string&amp; filename) : filename(filename) &#123;
+        loadFromDisk();
+    &#125;
+
+    void display() override &#123;
+        std::cout &lt;&lt; &quot;Displaying &quot; &lt;&lt; filename &lt;&lt; &quot;\n&quot;;
+    &#125;
+
+    // 模拟从磁盘加载图片的操作
+    void loadFromDisk() &#123;
+        std::cout &lt;&lt; &quot;Loading &quot; &lt;&lt; filename &lt;&lt; &quot; from disk...\n&quot;;
+    &#125;
+&#125;;
+
+// 代理类，控制对真实图片对象的访问
+class ProxyImage : public Image &#123;
+private:
+    RealImage* realImage = nullptr;
+    std::string filename;
+
+public:
+    ProxyImage(const std::string&amp; filename) : filename(filename) &#123;&#125;
+
+    // 代理类的 display 方法，只有在需要时才创建 RealImage
+    void display() override &#123;
+        if (realImage == nullptr) &#123;
+            realImage = new RealImage(filename);  // 延迟加载
+        &#125;
+        realImage-&gt;display();
+    &#125;
+
+    ~ProxyImage() &#123;
+        delete realImage;  // 释放真实对象
+    &#125;
+&#125;;
+
+// 客户端代码
+int main() &#123;
+    Image* image = new ProxyImage(&quot;test_image.jpg&quot;);
+
+    // 图片只在真正需要时才加载
+    std::cout &lt;&lt; &quot;Image will be displayed the first time:\n&quot;;
+    image-&gt;display();  // 第一次调用时加载图片
+
+    std::cout &lt;&lt; &quot;\nImage will be displayed again:\n&quot;;
+    image-&gt;display();  // 第二次调用时不再加载
+
+    delete image;  // 清理
+    return 0;
+&#125;
+</code></pre>
+
             
         </div>
     </div>
     <div class="post-tags">
         
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
         
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00a596">设计模式</a>
+        </span>
         
     </div>
     <a href="/2024/09/12/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
@@ -406,13 +519,115 @@ int main() &#123;
     <div class="description">
         <div class="content" v-pre>
             
-            
+            <p>重要性程度：5<br>外观模式：外部与一个子系统的通信必须通过一个统一的外观对象进行，为子系统中的一组接口提供一个一致的界面，外观模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。是一种对象结构型模式。</p>
+<ol>
+<li>主要组成<ol>
+<li>外观角色</li>
+<li>子系统角色</li>
+</ol>
+</li>
+<li>优点：<ol>
+<li>简化使用</li>
+<li>减少耦合：客户端和子系统之间的耦合度降低，子系统的修改不会影响客户端</li>
+<li>便于维护。子系统内部的变化不会影响到外观类和客户端之间的接口。</li>
+<li>分层解耦。外观模式可以划分系统的不同部分，使系统层次更加清晰。</li>
+</ol>
+</li>
+<li>缺点：<ol>
+<li>过度封装</li>
+<li>不符合开闭原则：如果要扩展外观类的功能，可能需要修改外观类的代码</li>
+</ol>
+</li>
+<li>代码<br>家庭影院系统，子系统：DVD播放器、音响、投影仪。使用外观模式封装这些复杂的系统，提供一个简单的接口让用户操作。</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+
+// 子系统1：DVD播放器
+class DVDPlayer &#123;
+public:
+    void on() &#123; std::cout &lt;&lt; &quot;DVD Player is On\n&quot;; &#125;
+    void off() &#123; std::cout &lt;&lt; &quot;DVD Player is Off\n&quot;; &#125;
+    void play() &#123; std::cout &lt;&lt; &quot;DVD is playing\n&quot;; &#125;
+&#125;;
+
+// 子系统2：音响系统
+class SoundSystem &#123;
+public:
+    void on() &#123; std::cout &lt;&lt; &quot;Sound System is On\n&quot;; &#125;
+    void off() &#123; std::cout &lt;&lt; &quot;Sound System is Off\n&quot;; &#125;
+    void setVolume(int level) &#123; std::cout &lt;&lt; &quot;Sound volume set to &quot; &lt;&lt; level &lt;&lt; &quot;\n&quot;; &#125;
+&#125;;
+
+// 子系统3：投影仪
+class Projector &#123;
+public:
+    void on() &#123; std::cout &lt;&lt; &quot;Projector is On\n&quot;; &#125;
+    void off() &#123; std::cout &lt;&lt; &quot;Projector is Off\n&quot;; &#125;
+    void setInput(std::string input) &#123; std::cout &lt;&lt; &quot;Projector input set to &quot; &lt;&lt; input &lt;&lt; &quot;\n&quot;; &#125;
+&#125;;
+
+// 外观类：家庭影院
+class HomeTheaterFacade &#123;
+private:
+    DVDPlayer* dvd;
+    SoundSystem* sound;
+    Projector* projector;
+
+public:
+    HomeTheaterFacade(DVDPlayer* dvd, SoundSystem* sound, Projector* projector) :
+        dvd(dvd), sound(sound), projector(projector) &#123;&#125;
+
+    // 提供统一接口简化操作
+    void watchMovie() &#123;
+        std::cout &lt;&lt; &quot;Get ready to watch a movie...\n&quot;;
+        projector-&gt;on();
+        projector-&gt;setInput(&quot;DVD&quot;);
+        sound-&gt;on();
+        sound-&gt;setVolume(10);
+        dvd-&gt;on();
+        dvd-&gt;play();
+    &#125;
+    void endMovie() &#123;
+        std::cout &lt;&lt; &quot;Shutting down the movie theater...\n&quot;;
+        dvd-&gt;off();
+        sound-&gt;off();
+        projector-&gt;off();
+    &#125;
+&#125;;
+
+int main() &#123;
+    // 创建子系统对象
+    DVDPlayer dvd;
+    SoundSystem sound;
+    Projector projector;
+
+    // 使用外观模式
+    HomeTheaterFacade homeTheater(&amp;dvd, &amp;sound, &amp;projector);
+
+    // 客户端通过外观类来操作复杂的子系统
+    homeTheater.watchMovie();
+    std::cout &lt;&lt; &quot;\n&quot;;
+    homeTheater.endMovie();
+
+    return 0;
+&#125;
+</code></pre>
+
             
         </div>
     </div>
     <div class="post-tags">
         
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
         
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">设计模式</a>
+        </span>
         
     </div>
     <a href="/2024/09/12/%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
@@ -424,6 +639,15 @@ int main() &#123;
     </a>
     <div class="category-and-date">
         
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
         <span class="date">
             <span class="icon">
                 <i class="fa-solid fa-calendar fa-fw"></i>
@@ -436,13 +660,116 @@ int main() &#123;
     <div class="description">
         <div class="content" v-pre>
             
-            
+            <p>重要性程度：4<br>适配器模式是一种结构型设计模式，它的主要目的是将不兼容的接口转换为兼容的接口，使得原本由于接口不兼容而不能一起工作的类能够协同工作。适配器模式通过引入一个适配器类，将已有类的接口适配成目标接口，从而解决类之间接口不兼容的问题。</p>
+<ol>
+<li>应用场景<ol>
+<li>已有类的接口与需求不兼容：需要复用一个现有的类，但该类的接口与我们正在开发的系统接口不一致。</li>
+<li>希望复用现有类并与新的接口集成：不想修改现有的代码，但希望能够在新系统中使用。</li>
+<li>将一个旧的接口转换为新的接口：需要与遗留代码或者第三方库兼容，并且希望将它们的接口转换为符合系统的新接口。</li>
+</ol>
+</li>
+<li>适配器模式的两种类型<ol>
+<li>对象适配器：通过组合的方式，即在适配器类中持有被适配对象的实例，从而通过适配器类调用被适配对象的方法。</li>
+<li>类适配器：通过继承的方式，即适配器类同时继承自被适配类和目标接口。C++ 中由于不支持多继承，所以通常使用对象适配器。</li>
+</ol>
+</li>
+<li>主要组成<ol>
+<li>目标抽象类target：客户希望调用的接口。适配器会将适配者的接口转换为target接口</li>
+<li>适配器类adapter</li>
+<li>适配者类adaptee</li>
+<li>客户类</li>
+</ol>
+</li>
+<li>优点：<ol>
+<li>解耦调用者和接收者</li>
+<li>支持撤销与重做</li>
+<li>支持扩展性</li>
+</ol>
+</li>
+<li>缺点：<ol>
+<li>类的数量增加</li>
+<li>命令的存储开销</li>
+</ol>
+</li>
+<li>使用场景<ol>
+<li>撤销和重做功能：例如文本编辑器、图像处理软件等需要撤销和重做操作的场景。</li>
+<li>任务队列：可以将命令对象放入任务队列，按顺序执行，适用于多线程任务管理。</li>
+<li>日志记录：命令模式可以记录命令的执行历史，用于系统恢复、回滚等操作。</li>
+<li>宏命令：可以将多个命令组合成一个宏命令，一次性执行一组命令。</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 目标接口
+class Target &#123;
+public:
+    virtual void request() const &#123;
+        std::cout &lt;&lt;  &quot;Target: Default request.\n&quot;;
+    &#125;
+    virtual ~Target() = default;
+&#125;;
+
+// 适配者类，已有的接口（不兼容）
+class Adaptee &#123;
+public:
+    void specificRequest() const &#123;
+        std::cout &lt;&lt; &quot;Adaptee: Specific request.\n&quot;;
+    &#125;
+&#125;;
+
+// 适配器类
+class Adapter : public Target&#123;
+private:
+    Adaptee* adaptee;
+public:
+    Adapter(Adaptee* adaptee) : adaptee(adaptee) &#123;&#125;
+    void request() const override &#123;
+        std::cout &lt;&lt; &quot;Adapter: Translating request to adaptee&#39;s specific request.\n&quot;;
+        adaptee-&gt;specificRequest(); // 转换调用
+    &#125;
+&#125;;
+
+void clientcode(const Target* target) &#123;
+    std::cout &lt;&lt; &quot;Client: I can work just fine with Target objects.\n&quot;;
+    target-&gt;request();
+&#125;
+
+int main() &#123;
+    std::cout &lt;&lt; &quot;Client: I can use Target class directly.\n&quot;;
+    Target* target = new Target();
+    clientcode(target);
+
+    std::cout &lt;&lt; &quot;\nClient: But I can also use the Adapter to work with Adaptee:\n&quot;;
+    Adaptee* adaptee = new Adaptee();
+    Target* adapter = new Adapter(adaptee);  // 使用适配器转换接口
+    clientcode(adapter);
+
+    delete target;
+    delete adapter;
+    delete adaptee;
+
+    return 0;
+&#125;
+</code></pre>
+
             
         </div>
     </div>
     <div class="post-tags">
         
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
         
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">设计模式</a>
+        </span>
         
     </div>
     <a href="/2024/09/12/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
@@ -454,6 +781,15 @@ int main() &#123;
     </a>
     <div class="category-and-date">
         
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
         <span class="date">
             <span class="icon">
                 <i class="fa-solid fa-calendar fa-fw"></i>
@@ -466,13 +802,122 @@ int main() &#123;
     <div class="description">
         <div class="content" v-pre>
             
-            
+            <p>重要性程度：4<br>命令模式是一种型卫星设计模式，将请求封装为一个对象，从而可以使用不同的请求对客户端进行参数化。命令模式允许将请求的发出者和执行者解耦，并且可以通过存储、排队、撤销、重做等操作来灵活处理命令。核心思想是将<strong>请求或操作封装为对象</strong>，通过这种方式，可以将不同的请求抽象出来，使得系统可以在运行时决定哪些命令需要执行，并且可以记录下这些命令用于撤销、重做等操作。</p>
+<ol>
+<li>命令模式的典型使用场景：<ol>
+<li>撤销与重做功能</li>
+<li>任务队列</li>
+<li>宏命令</li>
+<li>请求的参数化</li>
+</ol>
+</li>
+<li>主要组成<ol>
+<li>抽象命令</li>
+<li>具体命令</li>
+<li>接收者</li>
+<li>调用者</li>
+<li>客户端</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;vector&gt;
+#include &lt;stack&gt;
+
+// 接受者类，负责命令执行
+class Light &#123;
+public:
+    void on() &#123; std::cout &lt;&lt; &quot;The light is on\n&quot;; &#125;
+    void off() &#123; std::cout &lt;&lt; &quot;The light is off\n&quot;; &#125;
+&#125;;
+
+// 抽象命令类
+class Command &#123;
+public :
+    virtual void execute() = 0; // 执行命令
+    virtual void undo() = 0;	// 撤销命令
+    virtual ~Command() = default;
+&#125;;
+
+// 具体命令
+class LightOnCommand : public Command &#123;
+private:
+    Light&amp; light;
+public:
+    LightOnCommand(Light&amp; light) : light(light) &#123;&#125;
+    void execute() override &#123; light.on(); &#125;
+    void undo() override &#123; light.off(); &#125;
+&#125;;
+
+// 具体命令类，负责关闭灯的操作
+class LightOffCommand : public Command &#123;
+private:
+    Light&amp; light;
+public:
+    LightOffCommand(Light&amp; light) : light(light) &#123;&#125;
+    void execute() override &#123;light.off();&#125;  // 执行关闭灯的操作
+    void undo() override &#123; light.on(); &#125;// 撤销关闭灯，实际上就是开灯
+&#125;;
+
+// 调用者类
+class RemoteControl &#123;
+private:
+    std::stack&lt;std::unique_ptr&lt;Command&gt;&gt; commandHistory; // 命令历史，用于撤销
+    std::unique_ptr&lt;Command&gt; command;
+public:
+    void setCommand(std::unique_ptr&lt;Command&gt; cmd) &#123;
+        command = std::move(cmd);
+    &#125;
+    void pressButton() &#123;
+        if (command) &#123;
+            command-&gt;execute();
+            commandHistory.push(std::move(command));	// 保存执行过的命令
+        &#125;
+    &#125;
+    void pressUndo() &#123;
+        if (!commandHistory.empty()) &#123;
+            commandHistory.top()-&gt;undo();
+            commandHistory.pop();
+        &#125;
+    &#125;
+&#125;;
+// 客户端代码
+int main() &#123;
+    Light light;	// 接收者
+    // 创建具体命令
+    auto lightOn = std::make_unique&lt;LightOnCommand&gt;(light);
+    auto lightOff = std::make_unique&lt;LightOffCommand&gt;(light);
+    // 创建遥控器
+    RemoteControl remote;
+    // 设置并执行打开灯命令
+    remote.setCommand(std::move(lightOn));
+    remote.pressButton();
+    // 设置并执行关闭灯命令
+    remote.setCommand(std::move(lightOff));
+    remote.pressButton();
+    // 撤销上一步的操作（关灯 -&gt; 开灯）
+    remote.pressUndo();
+    return 0;
+&#125;
+</code></pre>
+
             
         </div>
     </div>
     <div class="post-tags">
         
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
         
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
+        </span>
         
     </div>
     <a href="/2024/09/12/%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
@@ -484,6 +929,15 @@ int main() &#123;
     </a>
     <div class="category-and-date">
         
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
         <span class="date">
             <span class="icon">
                 <i class="fa-solid fa-calendar fa-fw"></i>
@@ -496,13 +950,118 @@ int main() &#123;
     <div class="description">
         <div class="content" v-pre>
             
-            
+            <p>重要性程度：5<br>迭代器模式是一种行为型设计模式，它提供了一种方法，顺序访问聚合对象（如列表、数组、集合）中的各个元素，而不需要暴露其内部的表示。迭代器模式使得客户端可以以统一的方式遍历不同类型的聚合对象，而无需关心对象的内部结构。</p>
+<ol>
+<li><strong>核心思想</strong>：迭代器模式的核心思想是将集合的遍历行为从集合对象中分离出来，将遍历的责任交给迭代器对象。这样，客户端无需知道聚合对象的内部结构，也能以统一的方式遍历集合中的元素。</li>
+<li>主要组成 <ol>
+<li>迭代器接口Iterator</li>
+<li>具体迭代器类</li>
+<li>聚合对象接口</li>
+<li>具体聚合类</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+// 迭代器接口，抽象迭代器类
+template&lt;typename T&gt;
+class Iterator &#123;
+public:
+    virtual T next() = 0;			// 获取下一个元素
+    virtual bool hasNext() = 0;		// 是否还有下一个元素
+    virtual ~Iterator() = default;
+&#125;;
+
+// 聚合对象接口，定义创建迭代器的方法，抽象聚合类
+template&lt;typename T&gt;
+class Aggregate &#123;
+public:
+    virtual Iterator&lt;T&gt;* createIterator() = 0;	 // 创建迭代器
+    virtual ~Aggregate() = default;
+&#125;;
+
+// 具体的聚合类，包含一组元素
+template&lt;typename T&gt;
+class ConcreteAggregate : public Aggregate&lt;T&gt;&#123;
+private:
+    std::vector&lt;T&gt; items;	// 使用std::vector存储元素
+public:
+    void addItem(const T&amp; item) &#123;
+        items.push_back(item);
+    &#125;
+    T getItem(int index) const &#123;
+        return items[index];
+    &#125;
+    int getSize() const &#123;
+        return items.size();
+    &#125;
+    // 实现创建迭代器的方法
+    Iterator&lt;T&gt;* createIterator() override;
+    // 返回内部数据的引用，用于迭代器访问
+    std::vector&lt;T&gt;&amp; getItems() &#123;
+        return items;
+    &#125;
+&#125;;
+// 具体的迭代器类，负责遍历ConcreteAggregate中的元素
+template&lt;typename T&gt;
+class ConcreteIterator : public Iterator&lt;T&gt; &#123;
+private:
+    ConcreteAggregate&lt;T&gt;&amp; aggregate;	// 需要迭代的聚合对象
+    int currentIndex = 0;			// 当前的迭代位置
+public:
+    ConcreteIterator(ConcreteAggregate&lt;T&gt;&amp; agg) : aggregate(agg) &#123;&#125;
+    T next() override &#123;
+        return aggregate.getItem(currentIndex++);
+    &#125;
+    bool hasNext() override &#123;
+        return currentIndex &lt; aggregate.getSize();
+    &#125;
+&#125;;
+// 为具体的聚合类提供创建迭代器的实现
+template&lt;typename T&gt;
+Iterator&lt;T&gt;* ConcreteAggregate&lt;T&gt;::createIterator() &#123;
+    return new ConcreteIterator&lt;T&gt;(*this);  // 创建并返回迭代器
+&#125;
+// 客户端代码
+int main() &#123;
+    ConcreteAggregate&lt;int&gt; numbers;
+    numbers.addItem(1);
+    numbers.addItem(2);
+    numbers.addItem(3);
+    numbers.addItem(4);
+
+    // 创建迭代器
+    Iterator&lt;int&gt;* iterator = numbers.createIterator();
+
+    std::cout &lt;&lt; &quot;Iterating over numbers:\n&quot;;
+    while (iterator-&gt;hasNext()) &#123;
+        std::cout &lt;&lt; iterator-&gt;next() &lt;&lt; &quot; &quot;;  // 通过迭代器遍历元素
+    &#125;
+    std::cout &lt;&lt; std::endl;
+
+    delete iterator;  // 清理迭代器
+
+    return 0;
+&#125;
+</code></pre>
+
             
         </div>
     </div>
     <div class="post-tags">
         
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
         
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
+        </span>
         
     </div>
     <a href="/2024/09/12/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
@@ -649,7 +1208,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00a596">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
         </span>
         
     </div>
@@ -933,7 +1492,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00bcd4">设计模式</a>
         </span>
         
     </div>
@@ -1320,7 +1879,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #03a9f4">设计模式</a>
         </span>
         
     </div>

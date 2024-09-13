@@ -162,11 +162,131 @@
             2024/9/12
         </span>
         
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">
+                    设计模式
+                </a>
+            </span>
+            
+        </span>
         
     </div>
     
     <div class="content" v-pre>
-        
+        <p>重要性程度：5<br>迭代器模式是一种行为型设计模式，它提供了一种方法，顺序访问聚合对象（如列表、数组、集合）中的各个元素，而不需要暴露其内部的表示。迭代器模式使得客户端可以以统一的方式遍历不同类型的聚合对象，而无需关心对象的内部结构。</p>
+<ol>
+<li><strong>核心思想</strong>：迭代器模式的核心思想是将集合的遍历行为从集合对象中分离出来，将遍历的责任交给迭代器对象。这样，客户端无需知道聚合对象的内部结构，也能以统一的方式遍历集合中的元素。</li>
+<li>主要组成 <ol>
+<li>迭代器接口Iterator</li>
+<li>具体迭代器类</li>
+<li>聚合对象接口</li>
+<li>具体聚合类</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+// 迭代器接口，抽象迭代器类
+template&lt;typename T&gt;
+class Iterator &#123;
+public:
+    virtual T next() = 0;			// 获取下一个元素
+    virtual bool hasNext() = 0;		// 是否还有下一个元素
+    virtual ~Iterator() = default;
+&#125;;
+
+// 聚合对象接口，定义创建迭代器的方法，抽象聚合类
+template&lt;typename T&gt;
+class Aggregate &#123;
+public:
+    virtual Iterator&lt;T&gt;* createIterator() = 0;	 // 创建迭代器
+    virtual ~Aggregate() = default;
+&#125;;
+
+// 具体的聚合类，包含一组元素
+template&lt;typename T&gt;
+class ConcreteAggregate : public Aggregate&lt;T&gt;&#123;
+private:
+    std::vector&lt;T&gt; items;	// 使用std::vector存储元素
+public:
+    void addItem(const T&amp; item) &#123;
+        items.push_back(item);
+    &#125;
+    T getItem(int index) const &#123;
+        return items[index];
+    &#125;
+    int getSize() const &#123;
+        return items.size();
+    &#125;
+    // 实现创建迭代器的方法
+    Iterator&lt;T&gt;* createIterator() override;
+    // 返回内部数据的引用，用于迭代器访问
+    std::vector&lt;T&gt;&amp; getItems() &#123;
+        return items;
+    &#125;
+&#125;;
+// 具体的迭代器类，负责遍历ConcreteAggregate中的元素
+template&lt;typename T&gt;
+class ConcreteIterator : public Iterator&lt;T&gt; &#123;
+private:
+    ConcreteAggregate&lt;T&gt;&amp; aggregate;	// 需要迭代的聚合对象
+    int currentIndex = 0;			// 当前的迭代位置
+public:
+    ConcreteIterator(ConcreteAggregate&lt;T&gt;&amp; agg) : aggregate(agg) &#123;&#125;
+    T next() override &#123;
+        return aggregate.getItem(currentIndex++);
+    &#125;
+    bool hasNext() override &#123;
+        return currentIndex &lt; aggregate.getSize();
+    &#125;
+&#125;;
+// 为具体的聚合类提供创建迭代器的实现
+template&lt;typename T&gt;
+Iterator&lt;T&gt;* ConcreteAggregate&lt;T&gt;::createIterator() &#123;
+    return new ConcreteIterator&lt;T&gt;(*this);  // 创建并返回迭代器
+&#125;
+// 客户端代码
+int main() &#123;
+    ConcreteAggregate&lt;int&gt; numbers;
+    numbers.addItem(1);
+    numbers.addItem(2);
+    numbers.addItem(3);
+    numbers.addItem(4);
+
+    // 创建迭代器
+    Iterator&lt;int&gt;* iterator = numbers.createIterator();
+
+    std::cout &lt;&lt; &quot;Iterating over numbers:\n&quot;;
+    while (iterator-&gt;hasNext()) &#123;
+        std::cout &lt;&lt; iterator-&gt;next() &lt;&lt; &quot; &quot;;  // 通过迭代器遍历元素
+    &#125;
+    std::cout &lt;&lt; std::endl;
+
+    delete iterator;  // 清理迭代器
+
+    return 0;
+&#125;
+</code></pre>
+
     </div>
     
     

@@ -162,11 +162,129 @@
             2024/9/12
         </span>
         
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">
+                    设计模式
+                </a>
+            </span>
+            
+        </span>
         
     </div>
     
     <div class="content" v-pre>
-        
+        <p>重要性程度：4<br>适配器模式是一种结构型设计模式，它的主要目的是将不兼容的接口转换为兼容的接口，使得原本由于接口不兼容而不能一起工作的类能够协同工作。适配器模式通过引入一个适配器类，将已有类的接口适配成目标接口，从而解决类之间接口不兼容的问题。</p>
+<ol>
+<li>应用场景<ol>
+<li>已有类的接口与需求不兼容：需要复用一个现有的类，但该类的接口与我们正在开发的系统接口不一致。</li>
+<li>希望复用现有类并与新的接口集成：不想修改现有的代码，但希望能够在新系统中使用。</li>
+<li>将一个旧的接口转换为新的接口：需要与遗留代码或者第三方库兼容，并且希望将它们的接口转换为符合系统的新接口。</li>
+</ol>
+</li>
+<li>适配器模式的两种类型<ol>
+<li>对象适配器：通过组合的方式，即在适配器类中持有被适配对象的实例，从而通过适配器类调用被适配对象的方法。</li>
+<li>类适配器：通过继承的方式，即适配器类同时继承自被适配类和目标接口。C++ 中由于不支持多继承，所以通常使用对象适配器。</li>
+</ol>
+</li>
+<li>主要组成<ol>
+<li>目标抽象类target：客户希望调用的接口。适配器会将适配者的接口转换为target接口</li>
+<li>适配器类adapter</li>
+<li>适配者类adaptee</li>
+<li>客户类</li>
+</ol>
+</li>
+<li>优点：<ol>
+<li>解耦调用者和接收者</li>
+<li>支持撤销与重做</li>
+<li>支持扩展性</li>
+</ol>
+</li>
+<li>缺点：<ol>
+<li>类的数量增加</li>
+<li>命令的存储开销</li>
+</ol>
+</li>
+<li>使用场景<ol>
+<li>撤销和重做功能：例如文本编辑器、图像处理软件等需要撤销和重做操作的场景。</li>
+<li>任务队列：可以将命令对象放入任务队列，按顺序执行，适用于多线程任务管理。</li>
+<li>日志记录：命令模式可以记录命令的执行历史，用于系统恢复、回滚等操作。</li>
+<li>宏命令：可以将多个命令组合成一个宏命令，一次性执行一组命令。</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// 目标接口
+class Target &#123;
+public:
+    virtual void request() const &#123;
+        std::cout &lt;&lt;  &quot;Target: Default request.\n&quot;;
+    &#125;
+    virtual ~Target() = default;
+&#125;;
+
+// 适配者类，已有的接口（不兼容）
+class Adaptee &#123;
+public:
+    void specificRequest() const &#123;
+        std::cout &lt;&lt; &quot;Adaptee: Specific request.\n&quot;;
+    &#125;
+&#125;;
+
+// 适配器类
+class Adapter : public Target&#123;
+private:
+    Adaptee* adaptee;
+public:
+    Adapter(Adaptee* adaptee) : adaptee(adaptee) &#123;&#125;
+    void request() const override &#123;
+        std::cout &lt;&lt; &quot;Adapter: Translating request to adaptee&#39;s specific request.\n&quot;;
+        adaptee-&gt;specificRequest(); // 转换调用
+    &#125;
+&#125;;
+
+void clientcode(const Target* target) &#123;
+    std::cout &lt;&lt; &quot;Client: I can work just fine with Target objects.\n&quot;;
+    target-&gt;request();
+&#125;
+
+int main() &#123;
+    std::cout &lt;&lt; &quot;Client: I can use Target class directly.\n&quot;;
+    Target* target = new Target();
+    clientcode(target);
+
+    std::cout &lt;&lt; &quot;\nClient: But I can also use the Adapter to work with Adaptee:\n&quot;;
+    Adaptee* adaptee = new Adaptee();
+    Target* adapter = new Adapter(adaptee);  // 使用适配器转换接口
+    clientcode(adapter);
+
+    delete target;
+    delete adapter;
+    delete adaptee;
+
+    return 0;
+&#125;
+</code></pre>
+
     </div>
     
     

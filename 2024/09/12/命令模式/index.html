@@ -162,11 +162,135 @@
             2024/9/12
         </span>
         
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00a596">
+                    设计模式
+                </a>
+            </span>
+            
+        </span>
         
     </div>
     
     <div class="content" v-pre>
-        
+        <p>重要性程度：4<br>命令模式是一种型卫星设计模式，将请求封装为一个对象，从而可以使用不同的请求对客户端进行参数化。命令模式允许将请求的发出者和执行者解耦，并且可以通过存储、排队、撤销、重做等操作来灵活处理命令。核心思想是将<strong>请求或操作封装为对象</strong>，通过这种方式，可以将不同的请求抽象出来，使得系统可以在运行时决定哪些命令需要执行，并且可以记录下这些命令用于撤销、重做等操作。</p>
+<ol>
+<li>命令模式的典型使用场景：<ol>
+<li>撤销与重做功能</li>
+<li>任务队列</li>
+<li>宏命令</li>
+<li>请求的参数化</li>
+</ol>
+</li>
+<li>主要组成<ol>
+<li>抽象命令</li>
+<li>具体命令</li>
+<li>接收者</li>
+<li>调用者</li>
+<li>客户端</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;vector&gt;
+#include &lt;stack&gt;
+
+// 接受者类，负责命令执行
+class Light &#123;
+public:
+    void on() &#123; std::cout &lt;&lt; &quot;The light is on\n&quot;; &#125;
+    void off() &#123; std::cout &lt;&lt; &quot;The light is off\n&quot;; &#125;
+&#125;;
+
+// 抽象命令类
+class Command &#123;
+public :
+    virtual void execute() = 0; // 执行命令
+    virtual void undo() = 0;	// 撤销命令
+    virtual ~Command() = default;
+&#125;;
+
+// 具体命令
+class LightOnCommand : public Command &#123;
+private:
+    Light&amp; light;
+public:
+    LightOnCommand(Light&amp; light) : light(light) &#123;&#125;
+    void execute() override &#123; light.on(); &#125;
+    void undo() override &#123; light.off(); &#125;
+&#125;;
+
+// 具体命令类，负责关闭灯的操作
+class LightOffCommand : public Command &#123;
+private:
+    Light&amp; light;
+public:
+    LightOffCommand(Light&amp; light) : light(light) &#123;&#125;
+    void execute() override &#123;light.off();&#125;  // 执行关闭灯的操作
+    void undo() override &#123; light.on(); &#125;// 撤销关闭灯，实际上就是开灯
+&#125;;
+
+// 调用者类
+class RemoteControl &#123;
+private:
+    std::stack&lt;std::unique_ptr&lt;Command&gt;&gt; commandHistory; // 命令历史，用于撤销
+    std::unique_ptr&lt;Command&gt; command;
+public:
+    void setCommand(std::unique_ptr&lt;Command&gt; cmd) &#123;
+        command = std::move(cmd);
+    &#125;
+    void pressButton() &#123;
+        if (command) &#123;
+            command-&gt;execute();
+            commandHistory.push(std::move(command));	// 保存执行过的命令
+        &#125;
+    &#125;
+    void pressUndo() &#123;
+        if (!commandHistory.empty()) &#123;
+            commandHistory.top()-&gt;undo();
+            commandHistory.pop();
+        &#125;
+    &#125;
+&#125;;
+// 客户端代码
+int main() &#123;
+    Light light;	// 接收者
+    // 创建具体命令
+    auto lightOn = std::make_unique&lt;LightOnCommand&gt;(light);
+    auto lightOff = std::make_unique&lt;LightOffCommand&gt;(light);
+    // 创建遥控器
+    RemoteControl remote;
+    // 设置并执行打开灯命令
+    remote.setCommand(std::move(lightOn));
+    remote.pressButton();
+    // 设置并执行关闭灯命令
+    remote.setCommand(std::move(lightOff));
+    remote.pressButton();
+    // 撤销上一步的操作（关灯 -&gt; 开灯）
+    remote.pressUndo();
+    return 0;
+&#125;
+</code></pre>
+
     </div>
     
     
