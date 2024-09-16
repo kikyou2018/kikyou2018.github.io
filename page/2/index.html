@@ -177,6 +177,582 @@
         
 
 <div class="post">
+    <a href="/2024/09/12/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+        <h2 class="post-title">迭代器模式</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/12
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            <p>重要性程度：5<br>迭代器模式是一种行为型设计模式，它提供了一种方法，顺序访问聚合对象（如列表、数组、集合）中的各个元素，而不需要暴露其内部的表示。迭代器模式使得客户端可以以统一的方式遍历不同类型的聚合对象，而无需关心对象的内部结构。</p>
+<ol>
+<li><strong>核心思想</strong>：迭代器模式的核心思想是将集合的遍历行为从集合对象中分离出来，将遍历的责任交给迭代器对象。这样，客户端无需知道聚合对象的内部结构，也能以统一的方式遍历集合中的元素。</li>
+<li>主要组成 <ol>
+<li>迭代器接口Iterator</li>
+<li>具体迭代器类</li>
+<li>聚合对象接口</li>
+<li>具体聚合类</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+// 迭代器接口，抽象迭代器类
+template&lt;typename T&gt;
+class Iterator &#123;
+public:
+    virtual T next() = 0;			// 获取下一个元素
+    virtual bool hasNext() = 0;		// 是否还有下一个元素
+    virtual ~Iterator() = default;
+&#125;;
+
+// 聚合对象接口，定义创建迭代器的方法，抽象聚合类
+template&lt;typename T&gt;
+class Aggregate &#123;
+public:
+    virtual Iterator&lt;T&gt;* createIterator() = 0;	 // 创建迭代器
+    virtual ~Aggregate() = default;
+&#125;;
+
+// 具体的聚合类，包含一组元素
+template&lt;typename T&gt;
+class ConcreteAggregate : public Aggregate&lt;T&gt;&#123;
+private:
+    std::vector&lt;T&gt; items;	// 使用std::vector存储元素
+public:
+    void addItem(const T&amp; item) &#123;
+        items.push_back(item);
+    &#125;
+    T getItem(int index) const &#123;
+        return items[index];
+    &#125;
+    int getSize() const &#123;
+        return items.size();
+    &#125;
+    // 实现创建迭代器的方法
+    Iterator&lt;T&gt;* createIterator() override;
+    // 返回内部数据的引用，用于迭代器访问
+    std::vector&lt;T&gt;&amp; getItems() &#123;
+        return items;
+    &#125;
+&#125;;
+// 具体的迭代器类，负责遍历ConcreteAggregate中的元素
+template&lt;typename T&gt;
+class ConcreteIterator : public Iterator&lt;T&gt; &#123;
+private:
+    ConcreteAggregate&lt;T&gt;&amp; aggregate;	// 需要迭代的聚合对象
+    int currentIndex = 0;			// 当前的迭代位置
+public:
+    ConcreteIterator(ConcreteAggregate&lt;T&gt;&amp; agg) : aggregate(agg) &#123;&#125;
+    T next() override &#123;
+        return aggregate.getItem(currentIndex++);
+    &#125;
+    bool hasNext() override &#123;
+        return currentIndex &lt; aggregate.getSize();
+    &#125;
+&#125;;
+// 为具体的聚合类提供创建迭代器的实现
+template&lt;typename T&gt;
+Iterator&lt;T&gt;* ConcreteAggregate&lt;T&gt;::createIterator() &#123;
+    return new ConcreteIterator&lt;T&gt;(*this);  // 创建并返回迭代器
+&#125;
+// 客户端代码
+int main() &#123;
+    ConcreteAggregate&lt;int&gt; numbers;
+    numbers.addItem(1);
+    numbers.addItem(2);
+    numbers.addItem(3);
+    numbers.addItem(4);
+
+    // 创建迭代器
+    Iterator&lt;int&gt;* iterator = numbers.createIterator();
+
+    std::cout &lt;&lt; &quot;Iterating over numbers:\n&quot;;
+    while (iterator-&gt;hasNext()) &#123;
+        std::cout &lt;&lt; iterator-&gt;next() &lt;&lt; &quot; &quot;;  // 通过迭代器遍历元素
+    &#125;
+    std::cout &lt;&lt; std::endl;
+
+    delete iterator;  // 清理迭代器
+
+    return 0;
+&#125;
+</code></pre>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">设计模式</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/12/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
+    <a href="/2024/09/12/%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/">
+        <h2 class="post-title">装饰者模式</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/12
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            <p>重要性程度：3<br>动态地给一个对象增加一些额外的职责，就增加对象功能来说，装饰模式比生成子类实现更加灵活。是一种对象结构型模式。与继承关系相比，关联关系的主要优势在于不会破坏类的封装性，而且继承是一种耦合度较大的静态关系，无法在程序运行时动态扩展。</p>
+<ol>
+<li>核心组件<ol>
+<li>抽象组件</li>
+<li>具体组件</li>
+<li>抽象饰品</li>
+<li>具体饰品</li>
+</ol>
+</li>
+<li>优点：<ol>
+<li>灵活性高。装饰模式与继承关系的目的都是要扩展对象的功能，但是装饰模式可以提供比继承更多的灵活性。可以通过一种动态的方式来扩展一个对象的功能，通过配置文件可以在运行时选择不同的装饰器，从而实现不同的行为。</li>
+<li>遵循开放封闭原则。具体构件类与具体装饰类可以独立变化，用户可以根据需要增加新的具体构件类和具体装饰类，在使用时再对其进行组合，原有代码无须改变，符合“开闭原则”</li>
+<li>单一职责原则。</li>
+</ol>
+</li>
+<li>缺点：<ol>
+<li>增加复杂性</li>
+<li>调试困难</li>
+</ol>
+</li>
+<li>代码<br>抽象组件：咖啡<br>具体组件：黑咖啡<br>抽象饰品：小料<br>具体饰品：牛奶 巧克力</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+using namespace std;
+// 抽象咖啡
+class Coffee &#123;
+public:
+    virtual string getDescription() const &#123;
+        return &quot;unknown coffee&quot;;
+    &#125;
+    virtual double cost() const = 0;
+    virtual ~Coffee() = default;
+&#125;;
+
+// 具体组件：黑咖啡
+class BlackCoffee : public Coffee &#123;
+public:
+    std::string getDescription() const override &#123;
+        return &quot;Black Coffee&quot;;
+    &#125;
+
+    double cost() const override &#123;
+        return 2.0;
+    &#125;
+&#125;;
+
+// 抽象饰品
+class CoffeeDecorator : public Coffee &#123;
+protected:
+    unique_ptr&lt;Coffee&gt; coffee;//被装饰对象
+public:
+    CoffeeDecorator(unique_ptr&lt;Coffee&gt; c) : coffee(std::move(c)) &#123;&#125;;
+&#125;;
+
+// 具体装饰者：奶油
+class CreamDecorator : public CoffeeDecorator &#123;
+public:
+    CreamDecorator(std::unique_ptr&lt;Coffee&gt; c) : CoffeeDecorator(std::move(c)) &#123;&#125;
+
+    std::string getDescription() const override &#123;
+        return coffee-&gt;getDescription() + &quot;, Cream&quot;;
+    &#125;
+
+    double cost() const override &#123;
+        return coffee-&gt;cost() + 0.5;
+    &#125;
+&#125;;
+
+// 具体装饰者：巧克力
+class ChocolateDecorator : public CoffeeDecorator &#123;
+public:
+    ChocolateDecorator(std::unique_ptr&lt;Coffee&gt; c) : CoffeeDecorator(std::move(c)) &#123;&#125;
+
+    std::string getDescription() const override &#123;
+        return coffee-&gt;getDescription() + &quot;, Chocolate&quot;;
+    &#125;
+
+    double cost() const override &#123;
+        return coffee-&gt;cost() + 0.7;
+    &#125;
+&#125;;
+int main() &#123;
+    // 创建一个黑咖啡
+    std::unique_ptr&lt;Coffee&gt; myCoffee = std::make_unique&lt;BlackCoffee&gt;();
+    std::cout &lt;&lt; myCoffee-&gt;getDescription() &lt;&lt; &quot; 价格: $&quot; &lt;&lt; myCoffee-&gt;cost() &lt;&lt; std::endl;
+
+    // 在黑咖啡上加奶油
+    myCoffee = std::make_unique&lt;CreamDecorator&gt;(std::move(myCoffee));
+    std::cout &lt;&lt; myCoffee-&gt;getDescription() &lt;&lt; &quot; 价格: $&quot; &lt;&lt; myCoffee-&gt;cost() &lt;&lt; std::endl;
+
+    // 在加了奶油的咖啡上再加巧克力
+    myCoffee = std::make_unique&lt;ChocolateDecorator&gt;(std::move(myCoffee));
+    std::cout &lt;&lt; myCoffee-&gt;getDescription() &lt;&lt; &quot; 价格: $&quot; &lt;&lt; myCoffee-&gt;cost() &lt;&lt; std::endl;
+
+    return 0;
+&#125;
+</code></pre>
+<p>理解：<br>与其说是装饰，不如理解成，一个饰品克隆了一个被装饰者，但是克隆的时候，加上了饰品。但是克隆一个肉体太麻烦，就使用移动语义仅仅是抹除了思想上的本我，然后加上饰品创造了一个新我。<br>以此类推。</p>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/12/%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
+    <a href="/2024/09/12/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
+        <h2 class="post-title">策略模式</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/12
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            <p>策略模式定义一系列算法，将每一个算法封装起来，并让它们可以相互替换。策略模式让算法独立于使用它的客户而变化，也称为政策模式。策略模式是一种对象行为型模式。<br>重要性程度：4</p>
+<ol>
+<li>主要组成<ol>
+<li>环境类</li>
+<li>抽象策略类</li>
+<li>具体策略类<br>根据环境的某些特质，采用不同的策略。</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>完美支持“开闭原则”，用户可以在不修改原有系统的基础上选择算法或行为，也可以灵活地增加新的算法或行为。</li>
+<li>策略模式提供了可以替换继承关系的办法</li>
+<li>使用策略模式可以避免提供使用多重条件转移语句</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>客户端必须知道是所有的策略类，并自行决定使用哪一个策略类。</li>
+<li>策略模式将造成产生很多策略类，可以通过使用享元模式在一定程度上减少对象的数量。</li>
+</ol>
+</li>
+<li>代码<br>支付策略：分为现金支付、手机支付</li>
+</ol>
+<pre><code class="cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+// 抽象策略类
+class PaymentStrategy &#123;
+public:
+    virtual void pay(int amount) = 0;
+    virtual ~PaymentStrategy() = default;
+&#125;;
+
+// 具体策略类
+class CreaditCardPayment : public PaymentStrategy &#123;
+public:
+    void pay(int amount) override &#123;
+        std::cout &lt;&lt; &quot;使用信用卡支付了&quot; &lt;&lt; amount &lt;&lt; &quot;元。&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+class CashPayment : public PaymentStrategy &#123;
+public:
+    void pay(int amount) override &#123;
+        std::cout &lt;&lt; &quot;使用现金支付了&quot; &lt;&lt; amount &lt;&lt; &quot;元。&quot; &lt;&lt; std::endl;
+    &#125;
+&#125;;
+
+// 环境类
+class PaymentContext &#123;
+private:
+    std::unique_ptr&lt;PaymentStrategy&gt; _strategy;
+public:
+    void setPaymentStrategy(std::unique_ptr&lt;PaymentStrategy&gt; strategy) &#123;
+        _strategy = std::move(strategy);
+    &#125;
+    void executePayment(int amount) &#123;
+        if (_strategy) &#123;
+            _strategy-&gt;pay(amount);
+        &#125;
+        else &#123;
+            std::cout &lt;&lt; &quot;未指定支付方式。&quot; &lt;&lt; std::endl;
+        &#125;
+    &#125;
+&#125;;
+
+int main() &#123;
+    PaymentContext context;
+    context.setPaymentStrategy(std::make_unique&lt;CreaditCardPayment&gt;());
+    context.executePayment(100);
+    context.setPaymentStrategy(std::make_unique&lt;CashPayment&gt;());
+    context.executePayment(500);
+    return 0;
+&#125;
+</code></pre>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">设计模式</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/12/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
+    <a href="/2024/09/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/">
+        <h2 class="post-title">观察者模式</h2>
+    </a>
+    <div class="category-and-date">
+        
+        <span class="category">
+            <a href="/categories/STUDY/">
+                <span class="icon">
+                    <i class="fa-solid fa-bookmark fa-fw"></i>
+                </span>
+                STUDY
+            </a>
+        </span>
+        
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/9/12
+        </span>
+        
+        
+    </div>
+    <div class="description">
+        <div class="content" v-pre>
+            
+            <p>观察者模式定义对象间的一种一对多依赖关系，使得每当一个对象状态发生改变时，其相关依赖对象皆得到通知并被自动更新。观察者模式又叫做发布-订阅模式。是一种对象行为模式。<br>重要性程度：5</p>
+<ol>
+<li>主要组成<ol>
+<li>抽象观察者</li>
+<li>具体观察者</li>
+<li>抽象目标</li>
+<li>具体目标</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>可以实现表示层和数据逻辑层的分离，并定义了稳定的消息更新传递机制，抽象了更新接口，使得可以有各种各样不同的表示层作为具体观察者角色。</li>
+<li>观察者模式在观察目标和观察者之间建立一个抽象的耦合。</li>
+<li>观察者模式支持广播通信。</li>
+<li>观察者模式符合开闭原则</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>通知机制耗费时间</li>
+<li>如果存在循环依赖，会导致出现循环调用，可能导致系统崩溃。</li>
+</ol>
+</li>
+<li>代码</li>
+</ol>
+<pre><code class="cpp">#include &lt;memory&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+class Subject;
+// 抽象观察者
+class Observer : public std::enable_shared_from_this&lt;Observer&gt; &#123;
+public:
+    Observer(const std::string&amp; name) :_name(name) &#123;&#125;;
+    virtual ~Observer() = default;
+    virtual void update(const std::string&amp; message) = 0;
+    virtual void subscribe(std::shared_ptr&lt;Subject&gt; subject);
+    virtual void unsubscribe(std::shared_ptr&lt;Subject&gt; subject);
+protected:
+    std::string _name;
+    std::vector&lt;std::shared_ptr&lt;Subject&gt;&gt; subjects;
+&#125;;
+
+// 具体观察者
+class ConcreteObserver : public Observer &#123;
+public:
+    ConcreteObserver(const std::string&amp; name) : Observer(name) &#123;&#125;
+
+    void update(const std::string&amp; message) override &#123;
+        std::cout &lt;&lt; _name &lt;&lt; &quot; received message: &quot; &lt;&lt; message &lt;&lt; std::endl;
+    &#125;
+&#125;;
+// 抽象目标
+class Subject &#123;
+public:
+    virtual ~Subject() = default;
+    virtual void attach(std::shared_ptr&lt;Observer&gt; observer) = 0;
+    virtual void detach(std::shared_ptr&lt;Observer&gt; observer) = 0;
+    virtual void notify() = 0;
+&#125;;
+// 具体目标
+class ConcreteSubject : public Subject &#123;
+private:
+    std::vector&lt;std::shared_ptr&lt;Observer&gt;&gt; observers;
+    std::string _message;
+public:
+public:
+    void attach(std::shared_ptr&lt;Observer&gt; observer) override &#123;
+        observers.push_back(observer);
+    &#125;
+
+    void detach(std::shared_ptr&lt;Observer&gt; observer) override &#123;
+        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+    &#125;
+
+    void notify() override &#123;
+        for (auto&amp; observer : observers) &#123;
+            observer-&gt;update(_message);  // 通知每个观察者
+        &#125;
+    &#125;
+
+    void createMessage(const std::string&amp; message) &#123;
+        _message = message;
+        notify();  // 当状态改变时，通知所有观察者
+    &#125;
+&#125;;
+
+void Observer::subscribe(std::shared_ptr&lt;Subject&gt; subject) &#123;
+    subjects.push_back(subject);
+    subject-&gt;attach(shared_from_this());
+&#125;
+void Observer::unsubscribe(std::shared_ptr&lt;Subject&gt; subject) &#123;
+    subjects.erase(std::remove(subjects.begin(), subjects.end(), subject), subjects.end());
+    subject-&gt;detach(shared_from_this());
+&#125;
+
+// 测试观察者模式
+int main() &#123;
+    std::shared_ptr&lt;ConcreteSubject&gt; subject = std::make_shared&lt;ConcreteSubject&gt;();
+
+    std::shared_ptr&lt;Observer&gt; observer1 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 1&quot;);
+    std::shared_ptr&lt;Observer&gt; observer2 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 2&quot;);
+    std::shared_ptr&lt;Observer&gt; observer3 = std::make_shared&lt;ConcreteObserver&gt;(&quot;Observer 3&quot;);
+
+    observer1-&gt;subscribe(subject);
+    observer2-&gt;subscribe(subject);
+    observer3-&gt;subscribe(subject);
+
+    subject-&gt;createMessage(&quot;Hello, Observers!&quot;);  // 向所有观察者发送消息
+
+    observer2-&gt;unsubscribe(subject);
+
+    subject-&gt;createMessage(&quot;Second message!&quot;);  // 发送另一条消息，只有剩下的观察者会接收到
+
+    return 0;
+&#125;
+</code></pre>
+
+            
+        </div>
+    </div>
+    <div class="post-tags">
+        
+        <span class="icon">
+            <i class="fa-solid fa-tags fa-fw"></i>
+        </span>
+        
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
+        </span>
+        
+    </div>
+    <a href="/2024/09/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" class="go-post">阅读全文</a>
+</div>
+
+<div class="post">
     <a href="/2024/09/12/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E3%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82/">
         <h2 class="post-title">简单工厂、工厂方法与抽象工厂</h2>
     </a>
@@ -556,7 +1132,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ffa2c4">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00a596">设计模式</a>
         </span>
         
     </div>
@@ -605,7 +1181,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00a596">设计模式</a>
         </span>
         
     </div>
@@ -654,7 +1230,7 @@ int main() &#123;
         
         <span class="tag">
             
-            <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #ff7d73">网络编程</a>
+            <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="color: #00bcd4">网络编程</a>
         </span>
         
         <span class="tag">
@@ -790,7 +1366,7 @@ Singleton* Singleton::_instance = nullptr;
         
         <span class="tag">
             
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #00a596">设计模式</a>
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="color: #ff7d73">设计模式</a>
         </span>
         
     </div>
