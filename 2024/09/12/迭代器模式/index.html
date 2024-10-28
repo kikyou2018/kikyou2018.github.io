@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="重要性程度：5迭代器模式是一种行为型设计模式，它提供了一种方法，顺序访问聚合对象（如列表、数组、集合）中的各个元素，而不需要暴露其内部的表示。迭代器模式使得客户端可以以统一的方式遍历不同类型的聚合对象，而无需关心对象的内部结构。  核心思想：迭代器模式的核心思想是将集合的遍历行为从集合对象中分离出来，将遍历的责任交给迭代器对象。这样，客户端无需知道聚合对象的内部结构，也能以统一的方式遍历集合中的元">
+<meta property="og:type" content="article">
+<meta property="og:title" content="迭代器模式">
+<meta property="og:url" content="http://example.com/2024/09/12/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="重要性程度：5迭代器模式是一种行为型设计模式，它提供了一种方法，顺序访问聚合对象（如列表、数组、集合）中的各个元素，而不需要暴露其内部的表示。迭代器模式使得客户端可以以统一的方式遍历不同类型的聚合对象，而无需关心对象的内部结构。  核心思想：迭代器模式的核心思想是将集合的遍历行为从集合对象中分离出来，将遍历的责任交给迭代器对象。这样，客户端无需知道聚合对象的内部结构，也能以统一的方式遍历集合中的元">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-09-12T14:00:14.000Z">
+<meta property="article:modified_time" content="2024-09-13T02:44:06.000Z">
+<meta property="article:author" content="switch mbc">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/09/12/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/09/12/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/","path":"2024/09/12/迭代器模式/","title":"迭代器模式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>迭代器模式 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">subtitle</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">switch mbc</p>
+  <div class="site-description" itemprop="description">description</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/12/%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="switch mbc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="迭代器模式 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          迭代器模式
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-09-12 22:00:14" itemprop="dateCreated datePublished" datetime="2024-09-12T22:00:14+08:00">2024-09-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-09-13 10:44:06" itemprop="dateModified" datetime="2024-09-13T10:44:06+08:00">2024-09-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/STUDY/" itemprop="url" rel="index"><span itemprop="name">STUDY</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>重要性程度：5<br>迭代器模式是一种行为型设计模式，它提供了一种方法，顺序访问聚合对象（如列表、数组、集合）中的各个元素，而不需要暴露其内部的表示。迭代器模式使得客户端可以以统一的方式遍历不同类型的聚合对象，而无需关心对象的内部结构。</p>
+<ol>
+<li><strong>核心思想</strong>：迭代器模式的核心思想是将集合的遍历行为从集合对象中分离出来，将遍历的责任交给迭代器对象。这样，客户端无需知道聚合对象的内部结构，也能以统一的方式遍历集合中的元素。</li>
+<li>主要组成 <ol>
+<li>迭代器接口Iterator</li>
+<li>具体迭代器类</li>
+<li>聚合对象接口</li>
+<li>具体聚合类</li>
+</ol>
+</li>
+<li>代码<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 迭代器接口，抽象迭代器类</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Iterator</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> T <span class="title">next</span><span class="params">()</span> </span>= <span class="number">0</span>;			<span class="comment">// 获取下一个元素</span></span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="type">bool</span> <span class="title">hasNext</span><span class="params">()</span> </span>= <span class="number">0</span>;		<span class="comment">// 是否还有下一个元素</span></span><br><span class="line">	<span class="keyword">virtual</span> ~<span class="built_in">Iterator</span>() = <span class="keyword">default</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 聚合对象接口，定义创建迭代器的方法，抽象聚合类</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Aggregate</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> Iterator&lt;T&gt;* <span class="title">createIterator</span><span class="params">()</span> </span>= <span class="number">0</span>;	 <span class="comment">// 创建迭代器</span></span><br><span class="line">	<span class="keyword">virtual</span> ~<span class="built_in">Aggregate</span>() = <span class="keyword">default</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体的聚合类，包含一组元素</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ConcreteAggregate</span> : <span class="keyword">public</span> Aggregate&lt;T&gt;&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	std::vector&lt;T&gt; items;	<span class="comment">// 使用std::vector存储元素</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="type">void</span> <span class="title">addItem</span><span class="params">(<span class="type">const</span> T&amp; item)</span> </span>&#123;</span><br><span class="line">		items.<span class="built_in">push_back</span>(item);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function">T <span class="title">getItem</span><span class="params">(<span class="type">int</span> index)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> items[index];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="type">int</span> <span class="title">getSize</span><span class="params">()</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> items.<span class="built_in">size</span>();</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 实现创建迭代器的方法</span></span><br><span class="line">	<span class="function">Iterator&lt;T&gt;* <span class="title">createIterator</span><span class="params">()</span> <span class="keyword">override</span></span>;</span><br><span class="line">	<span class="comment">// 返回内部数据的引用，用于迭代器访问</span></span><br><span class="line">	<span class="function">std::vector&lt;T&gt;&amp; <span class="title">getItems</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> items;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 具体的迭代器类，负责遍历ConcreteAggregate中的元素</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ConcreteIterator</span> : <span class="keyword">public</span> Iterator&lt;T&gt; &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	ConcreteAggregate&lt;T&gt;&amp; aggregate;	<span class="comment">// 需要迭代的聚合对象</span></span><br><span class="line">	<span class="type">int</span> currentIndex = <span class="number">0</span>;			<span class="comment">// 当前的迭代位置</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="built_in">ConcreteIterator</span>(ConcreteAggregate&lt;T&gt;&amp; agg) : <span class="built_in">aggregate</span>(agg) &#123;&#125;</span><br><span class="line">	<span class="function">T <span class="title">next</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> aggregate.<span class="built_in">getItem</span>(currentIndex++);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="type">bool</span> <span class="title">hasNext</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> currentIndex &lt; aggregate.<span class="built_in">getSize</span>();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 为具体的聚合类提供创建迭代器的实现</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">Iterator&lt;T&gt;* ConcreteAggregate&lt;T&gt;::<span class="built_in">createIterator</span>() &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">ConcreteIterator</span>&lt;T&gt;(*<span class="keyword">this</span>);  <span class="comment">// 创建并返回迭代器</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 客户端代码</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	ConcreteAggregate&lt;<span class="type">int</span>&gt; numbers;</span><br><span class="line">	numbers.<span class="built_in">addItem</span>(<span class="number">1</span>);</span><br><span class="line">	numbers.<span class="built_in">addItem</span>(<span class="number">2</span>);</span><br><span class="line">	numbers.<span class="built_in">addItem</span>(<span class="number">3</span>);</span><br><span class="line">	numbers.<span class="built_in">addItem</span>(<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建迭代器</span></span><br><span class="line">	Iterator&lt;<span class="type">int</span>&gt;* iterator = numbers.<span class="built_in">createIterator</span>();</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; <span class="string">&quot;Iterating over numbers:\n&quot;</span>;</span><br><span class="line">	<span class="keyword">while</span> (iterator-&gt;<span class="built_in">hasNext</span>()) &#123;</span><br><span class="line">		std::cout &lt;&lt; iterator-&gt;<span class="built_in">next</span>() &lt;&lt; <span class="string">&quot; &quot;</span>;  <span class="comment">// 通过迭代器遍历元素</span></span><br><span class="line">	&#125;</span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">delete</span> iterator;  <span class="comment">// 清理迭代器</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/12/%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" rel="prev" title="装饰者模式">
+                  <i class="fa fa-angle-left"></i> 装饰者模式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/09/12/%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F/" rel="next" title="命令模式">
+                  命令模式 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">switch mbc</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

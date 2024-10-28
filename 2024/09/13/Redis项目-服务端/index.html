@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="服务端处理流程为  创建监听socket 设置监听的最大挂起连接的队列长度 将监听socket设置为非阻塞模式 将监听socket添加到epoll进行管理 调用epoll.wait()。如果是监听事件（fd &#x3D;&#x3D; serverSocket） 将通信socke设置为非阻塞模式。将通信通信socket对应的handleClient函数添加到任务队列中。（改进的地方：将std::bi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis项目-服务端">
+<meta property="og:url" content="http://example.com/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E6%9C%8D%E5%8A%A1%E7%AB%AF/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="服务端处理流程为  创建监听socket 设置监听的最大挂起连接的队列长度 将监听socket设置为非阻塞模式 将监听socket添加到epoll进行管理 调用epoll.wait()。如果是监听事件（fd &#x3D;&#x3D; serverSocket） 将通信socke设置为非阻塞模式。将通信通信socket对应的handleClient函数添加到任务队列中。（改进的地方：将std::bi">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-09-13T03:55:22.000Z">
+<meta property="article:modified_time" content="2024-09-23T09:36:32.000Z">
+<meta property="article:author" content="switch mbc">
+<meta property="article:tag" content="项目">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="网络编程">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E6%9C%8D%E5%8A%A1%E7%AB%AF/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E6%9C%8D%E5%8A%A1%E7%AB%AF/","path":"2024/09/13/Redis项目-服务端/","title":"Redis项目-服务端"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Redis项目-服务端 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">subtitle</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#handleClient-%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">handleClient()函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#executeTransaction-std-queuestd-string-commandsQueue-int-clientSocket"><span class="nav-number">2.</span> <span class="nav-text">executeTransaction(std::queuestd::string&amp;commandsQueue,int clientSocket)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F%E5%B7%A5%E5%8E%82%E5%AE%9E%E7%8E%B0%E5%91%BD%E4%BB%A4%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">享元模式工厂实现命令解析器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">命令解析器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RedisHelper"><span class="nav-number">5.</span> <span class="nav-text">RedisHelper</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A5%E6%94%B6%E5%88%B0%E7%9A%84string-%E7%AC%AC%E4%B8%80%E4%B8%AA%E6%98%AFcommand%EF%BC%8C%E5%B9%B6%E6%8A%8A%E5%90%8E%E9%9D%A2%E5%87%A0%E4%B8%AA%E5%AD%98%E5%82%A8%E5%9C%A8%E4%B8%80%E4%B8%AA%E5%90%8D%E4%B8%BAtokens%E7%9A%84vector%E4%B8%AD%EF%BC%88string%E7%B1%BB%E5%9E%8B%EF%BC%89%EF%BC%8C%E6%8A%8A%E8%BF%99%E4%B8%AAtokens%E5%8F%91%E9%80%81%E7%BB%99parse%EF%BC%8C%E5%86%8D%E5%8F%91%E9%80%81%E7%BB%99RedisHelper%E3%80%82%E9%82%A3%E4%B9%88RedisHelper%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%E5%91%A2%EF%BC%9F"><span class="nav-number">6.</span> <span class="nav-text">服务端接收到的string 第一个是command，并把后面几个存储在一个名为tokens的vector中（string类型），把这个tokens发送给parse，再发送给RedisHelper。那么RedisHelper是如何工作的呢？</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">switch mbc</p>
+  <div class="site-description" itemprop="description">description</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E6%9C%8D%E5%8A%A1%E7%AB%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="switch mbc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Redis项目-服务端 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis项目-服务端
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-09-13 11:55:22" itemprop="dateCreated datePublished" datetime="2024-09-13T11:55:22+08:00">2024-09-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-09-23 17:36:32" itemprop="dateModified" datetime="2024-09-23T17:36:32+08:00">2024-09-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/STUDY/" itemprop="url" rel="index"><span itemprop="name">STUDY</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>服务端处理流程为</p>
+<ol>
+<li>创建监听socket</li>
+<li>设置监听的最大挂起连接的队列长度</li>
+<li>将监听socket设置为非阻塞模式</li>
+<li>将监听socket添加到epoll进行管理</li>
+<li>调用epoll.wait()。如果是监听事件（fd &#x3D;&#x3D; serverSocket）</li>
+<li>将通信socke设置为非阻塞模式。将通信通信socket对应的handleClient函数添加到任务队列中。（改进的地方：将std::bind()改为lambda表达式，并将this改为shared_from_this，以确保RedisServer对象的生命周期在多线程环境中被正确管理。）（错误：对于单例而言，不需要shared_ptr）</li>
+</ol>
+<h4 id="handleClient-函数"><a href="#handleClient-函数" class="headerlink" title="handleClient()函数"></a>handleClient()函数</h4><p><strong>（这里服务端的通信socket的缓冲区每次接受的都是一条指令，假如说客户端发送的是set key1 value1.那么下面的std::vector<a href="std::string">std::string</a> tokens中存储的是set、key1、value1，然后command为set，对齐进行命令解析，解析之后，将tokens发给commandParser，进行处理。）</strong></p>
+<ol>
+<li>首先创建指令队列std::queue<a href="std::string">std::string</a> commandQueue;</li>
+<li>创建bool变量用来指示是否开启了事务，是否进行回滚。bool startMulti &#x3D; false;   bool fallback &#x3D; false;</li>
+<li>对于这个socket的缓冲区，不断读取缓冲区内容。每次从缓冲区中读取的内容存储到char buffer[2048]中，并buffer[bytesRead] &#x3D; ‘\0’;（这样做的目的：处理网络通信的时候，通常需要从套接字中读取数据并进行解析。当从套接字读取数据时，读取的数据并不会自动带终止符，因此需要手动添加一个终止符来确保可以被正确的解析为字符串。）</li>
+<li>将buffer中的内容复制到std::string receivedData中，然后使用std::istringstream构造函数接受这个字符串，创建一个可以从该字符串读取数据的输入流对象iss。之后就可以使用std::istringstream的成员函数来逐个读取字符串中的单词或数值。</li>
+<li>将receiveData中的各个string存储到std::vector<a href="std::string">std::string</a> tokens中。</li>
+<li>tokens非空。command &#x3D; tokens.front(); 定义std::string responseMessage;</li>
+<li>针对不同的命令进行不同的处理。分别进行设置responseMessage, send()<ol>
+<li>quit exit: stop, sendO()</li>
+<li>multi: 已开启，回复重复开启。未开启：定义一个std::queue<a href="std::string">std::string</a> empty; 执行std::swap(empty, commandQueue)[这里是为了清空commandQueue]，之后回复ok</li>
+<li>exec：首先判断事务是否开启。未开启，提示未开启。已开启：且！fallback，就调用executeTransaction()执行事务。 fallback提示错误</li>
+<li>discard：将startMulti、fallback设置为false，返回ok</li>
+<li>处理常规指令</li>
+</ol>
+<ul>
+<li>未开启事务：<ol>
+<li>解析command。commandParser &#x3D; flyweightFactory-&gt;getParser(command);</li>
+<li>解析正常。responseMessage &#x3D; commandParser-&gt;parse(tokens);</li>
+<li>发送响应消息回应客户端</li>
+</ol>
+</li>
+<li>开启事务<ol>
+<li>添加到事务队列commandQueue中（执行startMulti的时候已经清空commandQueue），解析错误的话，就将fallback设置为false（后续进行exec的时候，会提示错误）</li>
+<li>正常解析，将receivedData加入到commandQueue中，回复”QUEUE”。</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>没有数据可读时，继续循环。</li>
+<li>将通信socket从epoll中删除</li>
+<li>关闭clientScoket。</li>
+</ol>
+<h4 id="executeTransaction-std-queuestd-string-commandsQueue-int-clientSocket"><a href="#executeTransaction-std-queuestd-string-commandsQueue-int-clientSocket" class="headerlink" title="executeTransaction(std::queuestd::string&amp;commandsQueue,int clientSocket)"></a>executeTransaction(std::queue<a href="std::string">std::string</a>&amp;commandsQueue,int clientSocket)</h4><ol>
+<li>定义一个std::vector<a href="std::string">std::string</a> responseMessagesList;用来存储所有的执行结果。</li>
+<li>循环(终止条件：命令列表为空)</li>
+<li>取出命令列表命令std::string receiveData。</li>
+<li>定义std::istringstream接受命令receiveData;</li>
+<li>将其放到tokens中</li>
+<li>command &#x3D; tokens.front()；</li>
+<li>当tokens非空时，进行单个命令的处理，特殊情况为quit exit multi exec。其它情况为常规处理：解析命令，然后使用解析结果处理tokens。</li>
+</ol>
+<p>上述代码存在的问题，通信socket并没有添加到epoll中进行管理。同时遍历epoll的时候也没有针对遍历到的是通信socket进行处理。<br>正确的做法：<br>如果是监听socket，创建通信socket，并将其添加到epoll实例中。<br>如果是通信socket，进行命令处理，如果不是事务模式，处理完socket缓冲区中的数据就结束。如果是事务模式，必须等待执行完exec才能结束handleClient()<br>执行事务的时候将所有回复都合并成一个string。</p>
+<p>项目中模块的经典实现：</p>
+<ol>
+<li>epoll管理</li>
+<li>任务队列</li>
+</ol>
+<p>目前尚未熟悉的部分：</p>
+<ol>
+<li>命令解析</li>
+<li>命令解析器的执行</li>
+</ol>
+<h4 id="享元模式工厂实现命令解析器"><a href="#享元模式工厂实现命令解析器" class="headerlink" title="享元模式工厂实现命令解析器"></a>享元模式工厂实现命令解析器</h4><p>class ParserFlyweightFactory<br><strong>成员变量</strong></p>
+<ol>
+<li>std::unordered_map&lt;std::string, std::shared_ptr<CommandParser>&gt; parserMaps; &#x2F;&#x2F;用来存储已经解析过的命令</li>
+<li>std::shared_ptr<CommandParser> createCommandParser(std::string command);    &#x2F;&#x2F; 解析命令<ul>
+<li>先判断是否是合法命令</li>
+<li>根据命令类型进行调用parserMaps</li>
+</ul>
+</li>
+<li>std::shared_ptr<CommandParser> getParser(std::string&amp; command);     &#x2F;&#x2F; 获取命令解析结果<ul>
+<li>如果在map中中都到了解析结果，返回。找不到就调用createCommandParser进行解析，并把解析结果放到map中。这里进行解析的过程仅仅是根据command让map中的键为”command“的值为对应的了个shared_ptr解析类的实例。</li>
+</ul>
+</li>
+</ol>
+<h4 id="命令解析器"><a href="#命令解析器" class="headerlink" title="命令解析器"></a>命令解析器</h4><ol>
+<li>基类为CommandParser，派生类为各个具体命令的解析类。<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CommandParser</span> &#123;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="type">static</span> std::shared_ptr&lt;RedisHelper&gt; redisHelper;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">setRedisHelper</span><span class="params">(std::shared_ptr&lt;RedisHelper&gt; helper)</span> </span>&#123; redisHelper = helper; &#125;</span><br><span class="line">    <span class="function"><span class="type">static</span> std::shared_ptr&lt;RedisHelper&gt; <span class="title">getRedisHelper</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> redisHelper; &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::string <span class="title">parse</span><span class="params">(std::vector&lt;std::string&gt;&amp; tokens)</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+<li>子类重写<code>std::string parse(std::vector&lt;std::string&gt;&amp; tokens)</code><ul>
+<li>对于SetParser::parse</li>
+</ul>
+<ol>
+<li>首先判断tokens.size()是否小于3，小于报错</li>
+<li>判断tokens.size()是否等于4，等于4说明有额外参数NX或者XX，返回redisHelper-&gt;set(tokens[1], tokens[2], NX)结果或者redisHelper-&gt;set(tokens[1], tokens[2], XX)结果。</li>
+<li>等于3就返回redisHelper-&gt;set(tokens[1], tokens[2])结果。</li>
+</ol>
+</li>
+</ol>
+<h4 id="RedisHelper"><a href="#RedisHelper" class="headerlink" title="RedisHelper"></a>RedisHelper</h4><p>主要负责对数据库进行操作</p>
+<ol>
+<li>成员变量&amp;函数：<ul>
+<li>std::string dataBaseIndex &#x3D; “0”;      &#x2F;&#x2F; 当前操作的数据库</li>
+<li>std::shared_ptr&lt;SkipList&lt;std::string, RedisValue&gt;&gt; redisDataBase &#x3D; std::make_shared&lt;SkipList&lt;std::string, RedisValue&gt;&gt;(); &#x2F;&#x2F; 当前操作的数据库，一个数据库对应一个跳表</li>
+<li>void loadData(std::string loadPath); &#x2F;&#x2F; 从文件中加载，加载需要操作的数据库文件。</li>
+<li>std::string getFilePath(); &#x2F;&#x2F; 得到当前数据库对应的文件路径</li>
+<li>std::string RedisHelper::select(int index);将当前操作的数据库的智能指针指向指定的数据库。方法是创建一个智能指针指向跳表，然后根据index的到数据库文件的地址，然后从文件中加载数据到智能指针指向跳表。调用SkipList的loadFile方法。</li>
+</ul>
+</li>
+</ol>
+<h4 id="服务端接收到的string-第一个是command，并把后面几个存储在一个名为tokens的vector中（string类型），把这个tokens发送给parse，再发送给RedisHelper。那么RedisHelper是如何工作的呢？"><a href="#服务端接收到的string-第一个是command，并把后面几个存储在一个名为tokens的vector中（string类型），把这个tokens发送给parse，再发送给RedisHelper。那么RedisHelper是如何工作的呢？" class="headerlink" title="服务端接收到的string 第一个是command，并把后面几个存储在一个名为tokens的vector中（string类型），把这个tokens发送给parse，再发送给RedisHelper。那么RedisHelper是如何工作的呢？"></a>服务端接收到的string 第一个是command，并把后面几个存储在一个名为tokens的vector中（string类型），把这个tokens发送给parse，再发送给RedisHelper。那么RedisHelper是如何工作的呢？</h4><p>通过一个SkipList数据结构来存储键值对，RedisValue用于存储各种Redis数据类型的值。</p>
+<ol>
+<li>类成员和成员变量</li>
+</ol>
+<ul>
+<li>std::string dataBaseIndex &#x3D; ‘0’;用于表示当前选择的数据库。</li>
+<li>std::shared_ptr&lt;SkipList&lt;std::string, RedisValue&gt;&gt; redisDataBase;使用SkipList作为作为底层数据结构存储Redis数据。RedisValue是一个模板类。<br>-Public成员函数：这些成员函数实现了Redis的常用命令，如set、get、lpush、rpop等，方便对跳表中的键值进行操作。</li>
+</ul>
+<ol start="2">
+<li>主要方法解析</li>
+</ol>
+<ul>
+<li>flush():清空当前数据库中所有键值对</li>
+<li>std::string index(int index) :模拟Redis的select命令。</li>
+<li>std::string dbsize() const; 获取当前数据库中的键数量<br>key操作</li>
+<li>std::string keys(const std::string pattern&#x3D;”*”);返回当前数据库中所有符合模式的键名。默认匹配所有</li>
+<li>std::string exists(const std::vector<a href="std::string">std::string</a>&amp; keys);检查一组键是否存在于数据库中，返回结果。</li>
+<li>std::string del(const std::vector<a href="std::string">std::string</a>&amp;keys)</li>
+<li>std::string rename(const std::string&amp;oldName, const std::string&amp; newName);重命名一个键<br>string操作；</li>
+<li>std::string set(const std::string&amp;key, const RedisValue&amp;value,const SET_MODEL model &#x3D; NONE);设置键的值，支持不同的设置模式。</li>
+<li>std::string get(const std::string&amp; key);： 获取指定键的值，类似 Redis 的 GET 命令。</li>
+<li>std::string incr(const std::string&amp; key);： 自增操作，类似于 INCR 命令。</li>
+<li>std::string decr(const std::string&amp; key);： 自减操作，类似 DECR 命令。<br>List操作</li>
+<li>std::string lpush(const std::string&amp; key, const std::string&amp; value);： 将一个值压入列表的左边，类似于 LPUSH 命令。</li>
+<li>std::string rpop(const std::string&amp; key);： 弹出列表右边的一个值，类似于 RPOP 命令。</li>
+<li>std::string lrange(const std::string&amp; key, const std::string&amp; start, const std::string&amp; end);： 获取列表中指定范围的元素，类似 LRANGE 命令。<br>Hash操作</li>
+<li>std::string hset(const std::string&amp; key, const std::vector<a href="std::string">std::string</a>&amp; fields);： 设置哈希表中的字段值，类似 HSET 命令。</li>
+<li>std::string hget(const std::string&amp; key, const std::string&amp; field);： 获取哈希表中指定字段的值，类似 HGET 命令。</li>
+<li>std::string hdel(const std::string&amp; key, const std::vector<a href="std::string">std::string</a>&amp; fields);： 删除哈希表中的字段，类似 HDEL 命令。</li>
+<li>std::string hkeys(const std::string&amp; key);： 获取哈希表中的所有字段名，类似 HKEYS 命令。</li>
+<li>std::string hvals(const std::string&amp; key);： 获取哈希表中的所有值，类似 HVALS 命令。</li>
+</ul>
+<p>RedisValue于RedisValueType二者之间的关系体现了类型封装和多态的设计模式。<br>RedisValueType是一个抽象类，定义了所有Redis支持的数据类型的基本接口。而RedisValue则是封装这些具体类型并提供统一接口的类。</p>
+<ol>
+<li>RedisValueType：抽象基类</li>
+<li>Value模板类：具体类型的实现template&lt;RedisValue::Type tag, typename T&gt;<ul>
+<li>value是一个模板类，用于实现具体的Redis数据类型，如STRING\ARRAY\OBJECT。Value类通过tag来表示类型，通过模板参数来存储实际的数据值。不同的Redis类型（如STRING\ARRAY\OBJECT等）都通过继承Value模板类来实现。</li>
+</ul>
+</li>
+<li>具体类型的定义：具体类型如RedisString，RedisList，RedisObject都继承自Value模板类，并实现相关的虚函数。</li>
+<li>RedisValue类：统一接口封装。RedisValue类作为对外接口，封装了对不同Redis类型的操作，它的内部是一个指向RedisValueType的智能指针。</li>
+</ol>
+<p><strong>注</strong>：Value为什么还要单独设置一个tag呢？</p>
+<ol>
+<li>类型安全和区分：tag的设置确保每个Value对象明确知道自己属于哪种Redis数据类型，并且可以在运行时轻松区分不同的类型。</li>
+<li>提高类型判断的效率</li>
+<li>避免代码重复</li>
+<li>简化派生类的实现：由于tag的存在，派生类只需要简单地继承Value并提供对应的类型标签即可。</li>
+<li>多态机制中的类型识别：在面向对象编程中，多态机制使得我们可以通过基类指针或引用来操作不同的派生类对象。tag提供了对具体对象类型的有效识别，而无需繁琐的dynamic_cast或typeid。</li>
+<li>扩展性：设置tag还为将来的扩展提供了便利。</li>
+<li>隔离模板类型和Redis数据类型：tag可以看作是将Redis的类型系统和模板的类型系统分离开来。模板T表示的是实际的底层数据类型，而tag表示Redis数据类型。这种设计使得一个模板类可以处理多个不同的数据类型，同时在逻辑上仍然能保持与Redis数据类型的一一对应关系。</li>
+</ol>
+<p><strong>注</strong>：不使用成员变量而使用模板参数</p>
+<ol>
+<li>性能优化，使用模板参数将tag作为静态常量</li>
+<li>编译时类型安全</li>
+<li>模板特化的灵活性</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%A1%B9%E7%9B%AE/" rel="tag"># 项目</a>
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+              <a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" rel="tag"># 网络编程</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E5%AE%A2%E6%88%B7%E7%AB%AF/" rel="prev" title="Redis项目-客户端">
+                  <i class="fa fa-angle-left"></i> Redis项目-客户端
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/09/16/%E4%BB%80%E4%B9%88%E6%98%AFJSON/" rel="next" title="什么是JSON">
+                  什么是JSON <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">switch mbc</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

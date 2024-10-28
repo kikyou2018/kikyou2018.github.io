@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="JSON 指的是JavaScript Object Notation JS对象表示法，是一种轻量级的文本数据交换格式。JSON使用JavaScript语法来描述数据对象，但是JSON独立于语言和平台。 JSON语法 数据在名称&#x2F;值对中 数据由逗号 , 分隔 使用斜杆 \ 来转义字符 大括号 {} 保存对象 中括号 [] 保存数组，数组可以包含多个对象  JSON的两种结构 对象：大括号保">
+<meta property="og:type" content="article">
+<meta property="og:title" content="什么是JSON">
+<meta property="og:url" content="http://example.com/2024/09/16/%E4%BB%80%E4%B9%88%E6%98%AFJSON/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="JSON 指的是JavaScript Object Notation JS对象表示法，是一种轻量级的文本数据交换格式。JSON使用JavaScript语法来描述数据对象，但是JSON独立于语言和平台。 JSON语法 数据在名称&#x2F;值对中 数据由逗号 , 分隔 使用斜杆 \ 来转义字符 大括号 {} 保存对象 中括号 [] 保存数组，数组可以包含多个对象  JSON的两种结构 对象：大括号保">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-09-16T13:56:46.000Z">
+<meta property="article:modified_time" content="2024-09-18T06:00:34.000Z">
+<meta property="article:author" content="switch mbc">
+<meta property="article:tag" content="项目">
+<meta property="article:tag" content="JSON">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/09/16/%E4%BB%80%E4%B9%88%E6%98%AFJSON/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/09/16/%E4%BB%80%E4%B9%88%E6%98%AFJSON/","path":"2024/09/16/什么是JSON/","title":"什么是JSON"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>什么是JSON | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">subtitle</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON%E8%AF%AD%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">JSON语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON%E7%9A%84%E4%B8%A4%E7%A7%8D%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">JSON的两种结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON-parser"><span class="nav-number">3.</span> <span class="nav-text">JSON.parser()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON%E7%9A%84%E7%94%A8%E9%80%94"><span class="nav-number">4.</span> <span class="nav-text">JSON的用途</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AAJSON%E8%A7%A3%E6%9E%90%E5%99%A8%EF%BC%8C%E5%BA%94%E8%AF%A5%E7%94%B1%E5%93%AA%E4%BA%9B%E9%83%A8%E5%88%86%E7%BB%84%E6%88%90"><span class="nav-number">5.</span> <span class="nav-text">自定义一个JSON解析器，应该由哪些部分组成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%92%8Cprotobuf%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">6.</span> <span class="nav-text">和protobuf的区别</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">switch mbc</p>
+  <div class="site-description" itemprop="description">description</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/16/%E4%BB%80%E4%B9%88%E6%98%AFJSON/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="switch mbc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="什么是JSON | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          什么是JSON
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-09-16 21:56:46" itemprop="dateCreated datePublished" datetime="2024-09-16T21:56:46+08:00">2024-09-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-09-18 14:00:34" itemprop="dateModified" datetime="2024-09-18T14:00:34+08:00">2024-09-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/STUDY/" itemprop="url" rel="index"><span itemprop="name">STUDY</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>JSON 指的是JavaScript Object Notation JS对象表示法，是一种轻量级的文本数据交换格式。JSON使用JavaScript语法来描述数据对象，但是JSON独立于语言和平台。</p>
+<h4 id="JSON语法"><a href="#JSON语法" class="headerlink" title="JSON语法"></a>JSON语法</h4><ol>
+<li>数据在名称&#x2F;值对中</li>
+<li>数据由逗号 , 分隔</li>
+<li>使用斜杆 \ 来转义字符</li>
+<li>大括号 {} 保存对象</li>
+<li>中括号 [] 保存数组，数组可以包含多个对象</li>
+</ol>
+<h4 id="JSON的两种结构"><a href="#JSON的两种结构" class="headerlink" title="JSON的两种结构"></a>JSON的两种结构</h4><ol>
+<li>对象：大括号保存，是一个无序的名称&#x2F;值对集合。</li>
+<li>数组：中括号，保存的是值的有序集合。值value可以是双引号括起来的字符串、数值、true、false、null、对象或者数组，可以嵌套。</li>
+</ol>
+<h4 id="JSON-parser"><a href="#JSON-parser" class="headerlink" title="JSON.parser()"></a>JSON.parser()</h4><p>JSON通常用于与服务端交换数据，在接收数据时一般是字符串，可以使用JSON.parse()将数据转换为JavaScript对象。</p>
+<h4 id="JSON的用途"><a href="#JSON的用途" class="headerlink" title="JSON的用途"></a>JSON的用途</h4><ol>
+<li>数据传输：JSON最常见的用途是通过HTTP协议传输数据，尤其在web应用中用于客户端和服务器之间的数据交换。</li>
+<li>配置文件：许多软件或工具使用JSON格式存储配置数据。</li>
+<li>数据存储：JSON也可以用来存储结构化数据，尤其是在NoSQL数据库中，文档格式基本上就是JSON。</li>
+</ol>
+<h4 id="自定义一个JSON解析器，应该由哪些部分组成"><a href="#自定义一个JSON解析器，应该由哪些部分组成" class="headerlink" title="自定义一个JSON解析器，应该由哪些部分组成"></a>自定义一个JSON解析器，应该由哪些部分组成</h4><ol>
+<li>词法分析器：将输入的JSON字符串分解为一系列的标记Token，每个Token代表JSON语法的基本组成部分，如大括号{}、方括号{}、冒号：、逗号，以及关键字和数据类型。<ul>
+<li>作用：扫描输入的JSON字符串，将其切割成有意义的标记。</li>
+<li>实现细节：可以遍历字符串，判断是否是数字、字符串、布尔值、null，以及JSON语法中的特殊字符（如：，{}）</li>
+</ul>
+</li>
+<li>语法分析器：语法分析器负责根据词法分析器生成的标记序列，解析成树状数据结构。该结构通常是一个由对象、数组、字符串、数字等元素组成的树。<ul>
+<li>作用：将JSON标记序列组织成有层次地结构（例如对象包含键值对、数组包含多个值）</li>
+<li>实现细节：通常使用递归下降解析方法，根据JSON的语法规则，构造相应的数据结构（如树或嵌套对象）</li>
+<li>具体任务：</li>
+</ul>
+<ol>
+<li>解析对象：以{}包裹的一组键值对</li>
+<li>解析数组：以[]包裹的一组值</li>
+<li>解析值，解析JSON值可以是对象、数组、字符串、数字、布尔值或null</li>
+<li>处理嵌套：JSON允许对象和数组的嵌套，因此语法分析器需要能够处理嵌套结构。</li>
+</ol>
+</li>
+<li>数据结构：解析器需要一个合适的数据结构来存储解析后的JSON数据。这些数据结构一般支持递归（例如树状结构），以处理JSON的嵌套关系。<ul>
+<li>对象：通常使用类似于std::map或std::unordered_map的结构，键为字符串，值可以是任意JSON支持的类型。</li>
+<li>数组：通常使用类似std::vector或std::list来存储JSON数组中的元素。</li>
+<li>基础类型：包括string（字符串），double或int（数字），bool，null</li>
+</ul>
+</li>
+<li>错误处理：解析过程中，需要进行错误检测，并提供相应的错误提示。<ul>
+<li>语法错误：如果JSON格式不正确。</li>
+<li>类型错误：值类型不符合预期，比如JSON语法要求一个对象而实际上是数组。</li>
+</ul>
+</li>
+<li>序列化：解析器除了解析JSON字符串外，还需要支持将内部数据结构重新转换成JSON字符串，这个过程称为序列化。<ul>
+<li>作用：将解析后的数据结构重新生成JSON字符串，以便数据可以保存或传输。</li>
+<li>实现细节：根据树状数据结构，遍历每一个节点（对象或数组），并按顺序生成相应的JSON字符串。</li>
+</ul>
+</li>
+<li>扩展功能：格式化输出；支持注释；流失解析。</li>
+</ol>
+<h4 id="和protobuf的区别"><a href="#和protobuf的区别" class="headerlink" title="和protobuf的区别"></a>和protobuf的区别</h4><ol>
+<li>格式和可读性<ul>
+<li>JSON是一种<strong>人类可读的文本格式</strong>，它使用键值对来表示对象，结构化数据简单直观，可以直接在文本编辑器中查看和编辑。常用于网络通信和配置文件。</li>
+<li>Protobuf是一种<strong>二进制格式</strong>，不适合直接查看或编辑。是为数据的高效序列化和反序列化设计的，特别是在网络通信和存储方面。Protobuf更适合机器读取和处理，不适合人类直接阅读。</li>
+</ul>
+</li>
+<li>序列化和传输效率<ul>
+<li>JSON：由于是文本格式，数据较为冗长。传输数据时，JSON文件通常比二进制文件格式大很多，序列化和反序列化速度较慢，特别是当数据量很大的时候。效率低。</li>
+<li>Protobuf：是二进制格式，序列化后的数据相对更加紧凑，占用更少的带宽和存储空间。由于Protobuf对数据进行了压缩优化，序列化和反序列化的效率非常高，更适合在高性能应用场景中使用，比如实时通讯、数据密集型系统。</li>
+</ul>
+</li>
+<li>数据结构定义<ul>
+<li>JSON：不需要事先定义数据结构。，数据的结构是自描述的。通过键值对可以轻松理解每个数据的含义，非常灵活，但没有强类型约束，这会导致数据在传输过程中出现不一致或解析错误。</li>
+<li>Protobuf：必须预先定义数据结构，使用.proto文件定义每个数据类型的字段和规则。这种方法提供了强类型约束，确保了数据的兼容性和一致性。如果数据结构发生变化，可以通过向Protobuf schema中添加新的字段来实现向后兼容。</li>
+</ul>
+</li>
+<li>数据类型支持<ul>
+<li>JSON：支持的类型较为基础，主要包括字符串、数字、布尔值、数组、对象和null。在更复杂的场景下，可能需要自己进行扩展（例如日期、时间、二进制数据等）。</li>
+<li>Protobuf：支持丰富的数据类型，除了基本的整数、浮点数、布尔值、字符串等，还支持枚举、嵌套对象、字节数组（用于存储二进制数据）等高级数据类型。同时 Protobuf 的类型系统更严格，字段可以指定为必填或可选，并且支持默认值。</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%A1%B9%E7%9B%AE/" rel="tag"># 项目</a>
+              <a href="/tags/JSON/" rel="tag"># JSON</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/13/Redis%E9%A1%B9%E7%9B%AE-%E6%9C%8D%E5%8A%A1%E7%AB%AF/" rel="prev" title="Redis项目-服务端">
+                  <i class="fa fa-angle-left"></i> Redis项目-服务端
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/09/16/JSON%E9%A1%B9%E7%9B%AE/" rel="next" title="JSON项目">
+                  JSON项目 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">switch mbc</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

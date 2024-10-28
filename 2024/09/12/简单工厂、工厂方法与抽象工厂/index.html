@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="简单工厂模式、工厂方法模式、抽象工厂模式均属于创建型模式。 简单工厂模式 主要组成 工厂类：负责实现创建所有实例的内部逻辑，通常提供一个静态方法，根据传入的参数类型来决定初始化哪种具体类的对象。 抽象产品类：定义了产品的公共接口。 具体产品类   优点 封装对象创建。工厂类含有必要的判断逻辑，可以决定在什么时候创建哪一个产品类的实例，客户端可以免除直接创建产品对象的责任，而仅仅“消费产品”；同时客">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单工厂、工厂方法与抽象工厂">
+<meta property="og:url" content="http://example.com/2024/09/12/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E3%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="简单工厂模式、工厂方法模式、抽象工厂模式均属于创建型模式。 简单工厂模式 主要组成 工厂类：负责实现创建所有实例的内部逻辑，通常提供一个静态方法，根据传入的参数类型来决定初始化哪种具体类的对象。 抽象产品类：定义了产品的公共接口。 具体产品类   优点 封装对象创建。工厂类含有必要的判断逻辑，可以决定在什么时候创建哪一个产品类的实例，客户端可以免除直接创建产品对象的责任，而仅仅“消费产品”；同时客">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-09-12T05:27:54.000Z">
+<meta property="article:modified_time" content="2024-09-12T07:25:22.000Z">
+<meta property="article:author" content="switch mbc">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/09/12/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E3%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/09/12/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E3%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82/","path":"2024/09/12/简单工厂、工厂方法与抽象工厂/","title":"简单工厂、工厂方法与抽象工厂"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>简单工厂、工厂方法与抽象工厂 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">subtitle</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">简单工厂模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">工厂方法模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">抽象工厂模式</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">switch mbc</p>
+  <div class="site-description" itemprop="description">description</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/12/%E7%AE%80%E5%8D%95%E5%B7%A5%E5%8E%82%E3%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="switch mbc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="简单工厂、工厂方法与抽象工厂 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          简单工厂、工厂方法与抽象工厂
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2024-09-12 13:27:54 / Modified: 15:25:22" itemprop="dateCreated datePublished" datetime="2024-09-12T13:27:54+08:00">2024-09-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/STUDY/" itemprop="url" rel="index"><span itemprop="name">STUDY</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>简单工厂模式、工厂方法模式、抽象工厂模式均属于创建型模式。</p>
+<h4 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h4><ol>
+<li>主要组成<ol>
+<li>工厂类：负责实现创建所有实例的内部逻辑，通常提供一个静态方法，根据传入的参数类型来决定初始化哪种具体类的对象。</li>
+<li>抽象产品类：定义了产品的公共接口。</li>
+<li>具体产品类</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>封装对象创建。工厂类含有必要的判断逻辑，可以决定在什么时候创建哪一个产品类的实例，客户端可以免除直接创建产品对象的责任，而仅仅“消费产品”；同时客户端无需知道所创建的具体产品类的类名，只需要知道具体产品类所对应的参数即可。（是否关心，主要看main函数创建时，是否回根据用户的目的进行工厂类、创建方法、返回对象的选择）</li>
+<li>可扩展性：通过引入配置文件，可以在不修改任何客户端代码的情况先更换和增加新的具体产品类。</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>不符合开放封闭原则：每增加一种产品，都要修改工厂类的实现。</li>
+<li>不符合单一职责原则：工厂类集中了所有对象的创建逻辑，职责较重，导致维护和管理困难。</li>
+</ol>
+</li>
+<li>代码<br>生产果汁，客户端告诉工厂是什么水果，工厂负责生产果汁。<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 抽象产品类-果汁</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Juice</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Juice</span>(<span class="type">int</span> sweetness) : _sweetness(sweetness) &#123;&#125;;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Juice</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="type">int</span> _sweetness;     <span class="comment">// 甜度</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体产品类，苹果果汁、橙汁</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AppleJuice</span> : <span class="keyword">public</span> Juice &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">AppleJuice</span>(<span class="type">int</span> sweetness) : <span class="built_in">Juice</span>(sweetness) &#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;This is apple juice, its sweetness is &quot;</span> &lt;&lt; _sweetness &lt;&lt; <span class="string">&quot;.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">OrangeJuice</span> : <span class="keyword">public</span> Juice &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">OrangeJuice</span>(<span class="type">int</span> sweetness) : <span class="built_in">Juice</span>(sweetness) &#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;This is orange juice, its sweetness is &quot;</span> &lt;&lt; _sweetness &lt;&lt; <span class="string">&quot;.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 工厂类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">JuiceFactory</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">static</span> std::unique_ptr&lt;Juice&gt; <span class="title">product</span><span class="params">(<span class="type">const</span> std::string&amp; fruit)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (fruit == <span class="string">&quot;apple&quot;</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;AppleJuice&gt;(<span class="number">10</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (fruit == <span class="string">&quot;orange&quot;</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;OrangeJuice&gt;(<span class="number">20</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> product_0 = JuiceFactory::<span class="built_in">product</span>(<span class="string">&quot;orange&quot;</span>);</span><br><span class="line">    <span class="keyword">auto</span> product_1 = JuiceFactory::<span class="built_in">product</span>(<span class="string">&quot;apple&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (product_0) &#123;</span><br><span class="line">        product_0-&gt;<span class="built_in">showLabel</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (product_1) &#123;</span><br><span class="line">        product_1-&gt;<span class="built_in">showLabel</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>应用</li>
+</ol>
+<ul>
+<li>JDK类库</li>
+<li>Java加密技术</li>
+</ul>
+<h4 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h4><p>和简单工厂模式不同，为了解决简单工厂模式中工厂的职责复杂且不符合开放封闭原则。工厂方法模式将工厂类设置为一个抽象工厂类和若干个具体工厂类，之后增加具体产品类的时候只需要增加一个对应的具体工厂类即可，不需要对抽象工厂类进行更改。更见符合单一职责原则和开放封闭原则。</p>
+<ol>
+<li>主要组成<ol>
+<li>抽象产品</li>
+<li>具体产品</li>
+<li>抽象工厂</li>
+<li>具体工厂</li>
+</ol>
+</li>
+<li>优点：<ol>
+<li>用户只需要关心所需产品对应的工厂，无需关心创建细节，无需知道具体产品类的类名。</li>
+<li>基于工厂角色和产品角色的多态性设计时工厂方法模式的关键。</li>
+<li>扩展性：在系统中加入新产品时，无须修改抽象工厂和抽象产品提供的接口，无须修改客户端，也无须修改其他的具体工厂和具体产品，而只要添加一个具体工厂和具体产品就可以了。</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>添加新产品时，需要编写新的具体产品类和具体工厂类，类的个数成对增加。</li>
+<li>由于考虑到系统的可扩展性，需要引入抽象层，在客户端代码中均使用抽象层进行定义，增加了系统的抽象性和理解难度，且在实现时可能需要用到DOM、反射等技术，增加了系统的实现难度。</li>
+</ol>
+</li>
+<li>代码<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span>  <span class="comment">// 包含智能指针的头文件</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Juice</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Juice</span>(<span class="type">int</span> sweetness) : _sweetness(sweetness) &#123;&#125;;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Juice</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="type">int</span> _sweetness;     <span class="comment">// 甜度</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体产品类，苹果果汁、橙汁</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AppleJuice</span> : <span class="keyword">public</span> Juice &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">AppleJuice</span>(<span class="type">int</span> sweetness) : <span class="built_in">Juice</span>(sweetness) &#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;This is apple juice, its sweetness is &quot;</span> &lt;&lt; _sweetness &lt;&lt; <span class="string">&quot;.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">OrangeJuice</span> : <span class="keyword">public</span> Juice &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">OrangeJuice</span>(<span class="type">int</span> sweetness) : <span class="built_in">Juice</span>(sweetness) &#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;This is orange juice, its sweetness is &quot;</span> &lt;&lt; _sweetness &lt;&lt; <span class="string">&quot;.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 工厂类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">JuiceFactory</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">JuiceFactory</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Juice&gt; <span class="title">product</span><span class="params">()</span> </span>= <span class="number">0</span>;  <span class="comment">// 返回智能指针</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体工厂类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AppleJuiceFactory</span> : <span class="keyword">public</span> JuiceFactory &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Juice&gt; <span class="title">product</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;AppleJuice&gt;(<span class="number">10</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">OrangeJuiceFactory</span> : <span class="keyword">public</span> JuiceFactory &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Juice&gt; <span class="title">product</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;OrangeJuice&gt;(<span class="number">20</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 使用智能指针管理工厂的生命周期</span></span><br><span class="line">    std::unique_ptr&lt;JuiceFactory&gt; apple_juice_factory = std::<span class="built_in">make_unique</span>&lt;AppleJuiceFactory&gt;();</span><br><span class="line">    std::unique_ptr&lt;JuiceFactory&gt; orange_juice_factory = std::<span class="built_in">make_unique</span>&lt;OrangeJuiceFactory&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用智能指针管理产品的生命周期</span></span><br><span class="line">    std::unique_ptr&lt;Juice&gt; product_0 = apple_juice_factory-&gt;<span class="built_in">product</span>();</span><br><span class="line">    std::unique_ptr&lt;Juice&gt; product_1 = orange_juice_factory-&gt;<span class="built_in">product</span>();</span><br><span class="line"></span><br><span class="line">    product_0-&gt;<span class="built_in">showLabel</span>();</span><br><span class="line">    product_1-&gt;<span class="built_in">showLabel</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h4><p>对于上面的果汁的例子，一瓶果汁可以看作是由果汁本体、瓶子、标签组成。苹果果汁和橙汁的果汁本体和标签不同，但是瓶子可能是完全相同的。为了增加代码复用，且降低一个产品内部组件之间的耦合性（比如使用新的瓶子，不用更改苹果汁或橙汁的整个类的实现）。使用抽象工厂模式可以实现上面的功能。抽象工厂模式提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类。抽象工厂模式又称为Kit模式，属于创建型模式。</p>
+<ol>
+<li>主要组成<ol>
+<li>抽象组件类</li>
+<li>具体组件类</li>
+<li>抽象产品类</li>
+<li>具体产品类</li>
+<li>抽象工厂类</li>
+<li>具体工厂类<br>虽然上面列出了这么的类，但是具体实现还要看是否需要对应的抽象基类。</li>
+</ol>
+</li>
+<li>优点<ol>
+<li>抽象工厂模式隔离了具体类的生成，使得客户端并不需要知道什么被创建。由于这种隔离，更换一个具体工厂就变得相对容易。所有的具体工厂都实现了抽象工厂定义的那些公共接口，因此只需改变具体工厂的实例，就可以在某种程度上改变整个软件系统的行为。另外，应用抽象工厂模式可以实现高内聚低耦合的设计目的。</li>
+<li>增加新的具体工厂和产品组很方便，无需更改已有系统，符合开放封闭原则。</li>
+</ol>
+</li>
+<li>缺点<ol>
+<li>在添加新的产品对象时，难以扩展抽象工厂来生产新种类的产品，这是因为在抽象工厂角色中规定了所有可能被创建的产品集合，要支持新种类的产品就意味着要对该接口进行扩展，而这将涉及到对抽象工厂角色及其所有子类的修改，显然会带来较大的不便。</li>
+<li>开闭原则的倾斜性（增加新的工厂和产品族容易，增加新的产品等级结构麻烦）。</li>
+</ol>
+</li>
+<li>代码<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 抽象产品：标签</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Label</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Label</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体产品：红色标签</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">RedLabel</span> : <span class="keyword">public</span> Label &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;The label is red.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体产品：黄色标签</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">YellowLabel</span> : <span class="keyword">public</span> Label &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showLabel</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;The label is yellow.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 抽象产品：瓶子</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Bottle</span> &#123;</span><br><span class="line"><span class="keyword">public</span>: </span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Bottle</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showBottle</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体产品：大瓶子</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">BigBottle</span> : <span class="keyword">public</span> Bottle&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">showBottle</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;The bottle&#x27;s volume is 1000 ml.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体产品：小瓶子</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TinyBottle</span> : <span class="keyword">public</span> Bottle &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">showBottle</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;The bottle&#x27;s volume is 350 ml.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 抽象产品：果汁</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Juice</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Juice</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showInfo</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体产品：苹果汁</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AppleJuice</span> : <span class="keyword">public</span> Juice &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> _sweetness;</span><br><span class="line">    std::unique_ptr&lt;Label&gt; _label;</span><br><span class="line">    std::unique_ptr&lt;Bottle&gt; _bottle;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">AppleJuice</span>(<span class="type">int</span> sweetness, std::unique_ptr&lt;Label&gt; label, std::unique_ptr&lt;Bottle&gt; bottle)</span><br><span class="line">        : _sweetness(sweetness), _label(std::<span class="built_in">move</span>(label)), _bottle(std::<span class="built_in">move</span>(bottle)) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showInfo</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;This is apple juice, its sweetness is &quot;</span> &lt;&lt; _sweetness &lt;&lt; <span class="string">&quot;.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        _label-&gt;<span class="built_in">showLabel</span>();</span><br><span class="line">        _bottle-&gt;<span class="built_in">showBottle</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体产品：橙汁</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">OrangeJuice</span> : <span class="keyword">public</span> Juice &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">int</span> _sweetness;</span><br><span class="line">    std::unique_ptr&lt;Label&gt; _label;</span><br><span class="line">    std::unique_ptr&lt;Bottle&gt; _bottle;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">OrangeJuice</span>(<span class="type">int</span> sweetness, std::unique_ptr&lt;Label&gt; label, std::unique_ptr&lt;Bottle&gt; bottle)</span><br><span class="line">        : _sweetness(sweetness), _label(std::<span class="built_in">move</span>(label)), _bottle(std::<span class="built_in">move</span>(bottle)) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">showInfo</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;This is orange juice, its sweetness is &quot;</span> &lt;&lt; _sweetness &lt;&lt; <span class="string">&quot;.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">        _label-&gt;<span class="built_in">showLabel</span>();</span><br><span class="line">        _bottle-&gt;<span class="built_in">showBottle</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 抽象工厂类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">JuiceFactory</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">JuiceFactory</span>() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Label&gt; <span class="title">createLabel</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Bottle&gt; <span class="title">createBottle</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Juice&gt; <span class="title">product</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体工厂类：生产小瓶红标签苹果汁</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AppleJuiceFactory_tiny_red</span> : <span class="keyword">public</span> JuiceFactory &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Label&gt; <span class="title">createLabel</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;RedLabel&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Bottle&gt; <span class="title">createBottle</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;TinyBottle&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Juice&gt; <span class="title">product</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;AppleJuice&gt;(<span class="number">10</span>, <span class="built_in">createLabel</span>(), <span class="built_in">createBottle</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体工厂类：生产大瓶黄标签橙汁</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">OrangeJuiceFactory_yellow_big</span> : <span class="keyword">public</span> JuiceFactory &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Label&gt; <span class="title">createLabel</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;YellowLabel&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Bottle&gt; <span class="title">createBottle</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;BigBottle&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> std::unique_ptr&lt;Juice&gt; <span class="title">product</span><span class="params">()</span> <span class="keyword">override</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">make_unique</span>&lt;OrangeJuice&gt;(<span class="number">20</span>, <span class="built_in">createLabel</span>(), <span class="built_in">createBottle</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::unique_ptr&lt;JuiceFactory&gt; apple_juice_factory = std::<span class="built_in">make_unique</span>&lt;AppleJuiceFactory_tiny_red&gt;();</span><br><span class="line">    std::unique_ptr&lt;JuiceFactory&gt; orange_juice_factory = std::<span class="built_in">make_unique</span>&lt;OrangeJuiceFactory_yellow_big&gt;();</span><br><span class="line"></span><br><span class="line">    std::unique_ptr&lt;Juice&gt; product_0 = apple_juice_factory-&gt;<span class="built_in">product</span>();</span><br><span class="line">    std::unique_ptr&lt;Juice&gt; product_1 = orange_juice_factory-&gt;<span class="built_in">product</span>();</span><br><span class="line"></span><br><span class="line">    product_0-&gt;<span class="built_in">showInfo</span>();</span><br><span class="line">    product_1-&gt;<span class="built_in">showInfo</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/12/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%9F%BA%E7%A1%80/" rel="prev" title="设计模式基础">
+                  <i class="fa fa-angle-left"></i> 设计模式基础
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/09/12/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" rel="next" title="观察者模式">
+                  观察者模式 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">switch mbc</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

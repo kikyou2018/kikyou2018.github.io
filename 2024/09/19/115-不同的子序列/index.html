@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="题目描述：给你两个字符串 s 和 t ，统计并返回在 s 的 子序列 中 t 出现的个数，结果需要对 10^9 + 7 取模。示例 1：输入：s &#x3D; “rabbbit”, t &#x3D; “rabbit”输出：3 示例 2：输入：s &#x3D; “babgbag”, t &#x3D; “bag”输出：5 提示：1 &lt;&#x3D; s.length, t.length &lt;&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="115.不同的子序列">
+<meta property="og:url" content="http://example.com/2024/09/19/115-%E4%B8%8D%E5%90%8C%E7%9A%84%E5%AD%90%E5%BA%8F%E5%88%97/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="题目描述：给你两个字符串 s 和 t ，统计并返回在 s 的 子序列 中 t 出现的个数，结果需要对 10^9 + 7 取模。示例 1：输入：s &#x3D; “rabbbit”, t &#x3D; “rabbit”输出：3 示例 2：输入：s &#x3D; “babgbag”, t &#x3D; “bag”输出：5 提示：1 &lt;&#x3D; s.length, t.length &lt;&amp;">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-09-19T06:51:52.000Z">
+<meta property="article:modified_time" content="2024-09-23T06:21:32.000Z">
+<meta property="article:author" content="switch mbc">
+<meta property="article:tag" content="LeetCode">
+<meta property="article:tag" content="回溯法">
+<meta property="article:tag" content="动态规划">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/09/19/115-%E4%B8%8D%E5%90%8C%E7%9A%84%E5%AD%90%E5%BA%8F%E5%88%97/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/09/19/115-%E4%B8%8D%E5%90%8C%E7%9A%84%E5%AD%90%E5%BA%8F%E5%88%97/","path":"2024/09/19/115-不同的子序列/","title":"115.不同的子序列"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>115.不同的子序列 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">subtitle</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#714-%E4%B9%B0%E5%8D%96%E8%82%A1%E7%A5%A8%E7%9A%84%E6%9C%80%E4%BD%B3%E6%97%B6%E6%9C%BA%E5%90%AB%E6%89%8B%E7%BB%AD%E8%B4%B9"><span class="nav-number">1.</span> <span class="nav-text">714. 买卖股票的最佳时机含手续费</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#813-%E6%9C%80%E5%A4%A7%E5%B9%B3%E5%9D%87%E5%80%BC%E5%92%8C%E7%9A%84%E5%88%86%E7%BB%84"><span class="nav-number">2.</span> <span class="nav-text">813. 最大平均值和的分组</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">switch mbc</p>
+  <div class="site-description" itemprop="description">description</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/19/115-%E4%B8%8D%E5%90%8C%E7%9A%84%E5%AD%90%E5%BA%8F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="switch mbc">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="description">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="115.不同的子序列 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          115.不同的子序列
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-09-19 14:51:52" itemprop="dateCreated datePublished" datetime="2024-09-19T14:51:52+08:00">2024-09-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-09-23 14:21:32" itemprop="dateModified" datetime="2024-09-23T14:21:32+08:00">2024-09-23</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>题目描述：<br>给你两个字符串 s 和 t ，统计并返回在 s 的 子序列 中 t 出现的个数，结果需要对 10^9 + 7 取模。<br>示例 1：<br>输入：s &#x3D; “rabbbit”, t &#x3D; “rabbit”<br>输出：3</p>
+<p>示例 2：<br>输入：s &#x3D; “babgbag”, t &#x3D; “bag”<br>输出：5</p>
+<p>提示：<br>1 &lt;&#x3D; s.length, t.length &lt;&#x3D; 1000<br>s 和 t 由英文字母组成</p>
+<p>解题法：</p>
+<ol>
+<li>回溯法。<br>首先找到t的第一个字符匹配的第一个地方。，然后计算后面字符的匹配的count。然后计算t的第一个字符匹配的第二个地方，计算后面字符匹配的count…<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">backward</span><span class="params">(<span class="type">int</span> i, <span class="type">int</span> j, string&amp;s, string&amp;t)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> count =<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span>(j == t.<span class="built_in">size</span>())       <span class="comment">// 此时j为字符串t的末尾，说明找到了一个匹配的地方。直接返回1.</span></span><br><span class="line">           <span class="keyword">return</span> <span class="number">1</span>；</span><br><span class="line">        <span class="keyword">for</span>(;i &lt; s.<span class="built_in">size</span>();) &#123;   <span class="comment">// j没有到达字符串t的末尾，且i也没有到达s的末尾。进行递归。</span></span><br><span class="line">            <span class="keyword">if</span> (s[i]!= t[j]) &#123; i++; &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123; count = (count + <span class="built_in">backward</span>(i++, j<span class="number">+1</span>, s, t))%<span class="number">1000000007</span>; &#125; <span class="comment">// 计算是s[i+1,],t[j+1,]的匹配的个数；      </span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">numDistinct</span><span class="params">(string s, string t)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> i = <span class="number">0</span>, j = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(; i&lt;s.<span class="built_in">size</span>()&amp;&amp;j&lt;t.<span class="built_in">size</span>();)&#123;</span><br><span class="line">            <span class="keyword">if</span> (s[i]!= t[j]) &#123; i++; &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123; count = (count + <span class="built_in">backward</span>(i++, j<span class="number">+1</span>, s, t))%<span class="number">1000000007</span>; &#125; <span class="comment">// 计算是s[i+1,],t[j+1,]的匹配的个数；</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+但是时间复杂度很高，具体复杂度大概为(s.size()&#x2F;26)^n。</li>
+</ol>
+<p>正确做法是使用动态规划的做法。定义一个二维数组dp[i][j]表示s[0,i-1]与t[0,j-1]的匹配数量<br>递推公式<br>如果 s[i-1] &#x3D;&#x3D; t[j-1]，那么 dp[i][j] &#x3D; dp[i-1][j-1] + dp[i-1][j]，即当前字符匹配时，可以选择匹配它或者跳过它。<br>如果 s[i-1] !&#x3D; t[j-1]，那么 dp[i][j] &#x3D; dp[i-1][j]，即跳过 s[i-1]，继续匹配。<br>初始值：找到第一个字符匹配的位置k，那么之前的所有dp[][]均为0，dp[k+1][k+1]为1，之后就进行动态规划即可。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">numDistinct</span><span class="params">(string s, string t)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> m = s.<span class="built_in">size</span>();</span><br><span class="line">        <span class="type">int</span> n = t.<span class="built_in">size</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// dp[i][j] 表示 s 的前 i 个字符中子序列 t 的前 j 个字符的个数</span></span><br><span class="line">        vector&lt;vector&lt;<span class="type">long</span> <span class="type">long</span>&gt;&gt; <span class="built_in">dp</span>(m + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">long</span> <span class="type">long</span>&gt;(n + <span class="number">1</span>, <span class="number">0</span>));</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 对 t 为空字符串，子序列的个数是 1</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt;= m; ++i) &#123;</span><br><span class="line">            dp[i][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 动态规划求解</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= m; ++i) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">1</span>; j &lt;= n; ++j) &#123;</span><br><span class="line">                <span class="keyword">if</span> (s[i - <span class="number">1</span>] == t[j - <span class="number">1</span>]) &#123;</span><br><span class="line">                    <span class="comment">// 当前字符匹配，dp[i][j] = dp[i-1][j-1] + dp[i-1][j]</span></span><br><span class="line">                    dp[i][j] = dp[i - <span class="number">1</span>][j - <span class="number">1</span>] + dp[i - <span class="number">1</span>][j];</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// 当前字符不匹配，dp[i][j] = dp[i-1][j]</span></span><br><span class="line">                    dp[i][j] = dp[i - <span class="number">1</span>][j];</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 取模</span></span><br><span class="line">                dp[i][j] %= <span class="number">1000000007</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[m][n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>注意：<br>对于二维动态规划，dp[i][j]均要使用两次for循环。<br>对于初始值的选择，要考虑特殊情况。<br>比如为空、边界等。<br>对于i j循环哪一个是外层循环，哪一个是内层循环，主要根据递推公式来进行考虑。<br>对于上面这个例子， 递推公式是</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dp[i][j] = dp[i - <span class="number">1</span>][j - <span class="number">1</span>] + dp[i - <span class="number">1</span>][j];</span><br><span class="line">dp[i][j] = dp[i - <span class="number">1</span>][j];</span><br></pre></td></tr></table></figure>
+<ol start="516">
+<li>最长回文子序列<br>给你一个字符串 s ，找出其中最长的回文子序列，并返回该序列的长度。<br>子序列定义为：不改变剩余字符顺序的情况下，删除某些字符或者不删除任何字符形成的一个序列。<br>思路：</li>
+<li>状态定义：dp[i][j]表示子串s[i…j]的最长回文子序列的长度。</li>
+<li>状态转移方程：<ul>
+<li>如果s[i] &#x3D;&#x3D; s[j]，那么 dp[i][j] &#x3D; dp[i+1][j-1] + 2。</li>
+<li>如果 s[i] !&#x3D; s[j]，那么 dp[i][j] &#x3D; max(dp[i+1][j], dp[i][j-1])。</li>
+</ul>
+</li>
+<li>初始化条件<ul>
+<li>当i&#x3D;&#x3D;j时，表示单个字符，dp[i][j] &#x3D; 1;</li>
+</ul>
+</li>
+<li>最终条件答案保存在dp[0][n-1]中，其中n是字符串的长度。<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">longestPalindromeSubseq</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">dp</span>(s.<span class="built_in">size</span>(),<span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(s.<span class="built_in">size</span>(),<span class="number">0</span>));</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i =<span class="number">0</span>;i &lt; s.<span class="built_in">size</span>(); i++) &#123;</span><br><span class="line">            dp[i][i] =<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> len = <span class="number">2</span>; len &lt;= s.<span class="built_in">size</span>();len++) &#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> i =<span class="number">0</span>; i &lt;= s.<span class="built_in">size</span>() - len; i++) &#123;</span><br><span class="line">                <span class="type">int</span> j = i + len <span class="number">-1</span>;</span><br><span class="line">                <span class="keyword">if</span> (s[i] == s[j]) &#123;</span><br><span class="line">                    dp[i][j] = dp[i<span class="number">+1</span>][j<span class="number">-1</span>]<span class="number">+2</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    dp[i][j] = <span class="built_in">max</span>(dp[i][j<span class="number">-1</span>],dp[i<span class="number">+1</span>][j]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[<span class="number">0</span>][s.<span class="built_in">size</span>()<span class="number">-1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<strong>注意</strong></li>
+</ol>
+<ul>
+<li>尤其注意递推公式的划分。对于s[i] &#x3D;&#x3D; s[j]，那么 dp[i][j] &#x3D; dp[i+1][j-1] + 2，情况显而易见。对于s[i] !&#x3D; s[j]，那么 dp[i][j] &#x3D; max(dp[i+1][j], dp[i][j-1])，要懂得进行分类。</li>
+<li>尤其注意动态规划的解法本质上就是先计算子问题的解并记录下来，然后再根据子问题的解和递推公式求解新问题。所以循环的设定应该是问题由小到大。对于上面不同的子序列。其递推公式是dp[i][j] &#x3D; dp[i-1][j-1] + dp[i-1][j]和 dp[i][j] &#x3D; dp[i-1][j]，为了求得dp[i][j]的值，需要先求得dp[i-1][j-1]和dp[i-1][j]的值，所以i &#x3D; 1<del>m, j &#x3D; 1</del>n的循环完全可以实现先求解子问题。</li>
+</ul>
+<h4 id="714-买卖股票的最佳时机含手续费"><a href="#714-买卖股票的最佳时机含手续费" class="headerlink" title="714. 买卖股票的最佳时机含手续费"></a>714. 买卖股票的最佳时机含手续费</h4><p>给定一个整数数组 prices，其中 prices[i]表示第 i 天的股票价格 ；整数 fee 代表了交易股票的手续费用。<br>你可以无限次地完成交易，但是你每笔交易都需要付手续费。如果你已经购买了一个股票，在卖出它之前你就不能再继续购买股票了。<br>返回获得利润的最大值。<br>注意：这里的一笔交易指买入持有并卖出股票的整个过程，每笔交易你只需要为支付一次手续费。</p>
+<p>使用动态规划。<br><strong>注</strong>：dp数组的主要目的是为了记录状态，所以定义一个能够记录状态同时又很简洁的dp数组是一个很重要的事情。对于这道题，可以使用两个一维数组。dp_hold[n]和dp_unhold[n]，前者记录当第i天的时候持有股票时的收益，后者记录第i天不持有股票的收益。</p>
+<ul>
+<li>初始条件dp_hold[0] &#x3D; -prices[0]; dp_unhold[0] &#x3D; 0;</li>
+<li>递推公式dp_hold[i] &#x3D; max(dp_unhold[i-1] - prices[i],dp_hold[i-1]); dp_unhold[i] &#x3D; max(dp_hold[i-1] + prices[i] - fee, dp_unhold[i-1]);</li>
+<li>结果：dp_unhold[n-1];<br>代码<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">maxProfit</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; prices, <span class="type">int</span> fee)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = prices.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">hold</span><span class="params">(n)</span></span>;</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">unhold</span><span class="params">(n)</span></span>;</span><br><span class="line">        hold[<span class="number">0</span>] = -prices[<span class="number">0</span>];</span><br><span class="line">        unhold[<span class="number">0</span>] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">1</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            hold[i] = <span class="built_in">max</span>(unhold[i<span class="number">-1</span>] - prices[i], hold[i<span class="number">-1</span>]);</span><br><span class="line">            unhold[i] = <span class="built_in">max</span>(hold[i<span class="number">-1</span>] + prices[i] - fee, unhold[i<span class="number">-1</span>]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> unhold[n<span class="number">-1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="813-最大平均值和的分组"><a href="#813-最大平均值和的分组" class="headerlink" title="813. 最大平均值和的分组"></a>813. 最大平均值和的分组</h4><p>给定数组 nums 和一个整数 k 。我们将给定的数组 nums 分成 最多 k 个非空子数组，且数组内部是连续的 。 分数 由每个子数组内的平均值的总和构成。<br>注意我们必须使用 nums 数组中的每一个数进行分组，并且分数不一定需要是整数。<br>返回我们所能得到的最大 分数 是多少。答案误差在 10-6 内被视为是正确的。</p>
+<ol>
+<li>使用动态规划。定义一个二维动态数组dp[i][j]表示前i个数分成j分的得分。</li>
+<li>递推公式：dp[i][j]&#x3D;max(dp[i][j],dp[t][j−1]+avg(nums[t+1:i]))，其中，t表示j-1到i-1</li>
+<li>初始条件dp[i][1] &#x3D; 前i个数的平均<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;numeric&gt;</span>  <span class="comment">// for accumulate</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">double</span> <span class="title">largestSumOfAverages</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> n = nums.<span class="built_in">size</span>();</span><br><span class="line">        <span class="comment">// 前缀和数组，用于快速计算任意子数组的平均值</span></span><br><span class="line">        <span class="function">vector&lt;<span class="type">double</span>&gt; <span class="title">prefixSum</span><span class="params">(n + <span class="number">1</span>, <span class="number">0.0</span>)</span></span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">            prefixSum[i + <span class="number">1</span>] = prefixSum[i] + nums[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// dp[i][j] 表示前 i 个元素分成 j 组时的最大分数</span></span><br><span class="line">        vector&lt;vector&lt;<span class="type">double</span>&gt;&gt; <span class="built_in">dp</span>(n + <span class="number">1</span>, <span class="built_in">vector</span>&lt;<span class="type">double</span>&gt;(k + <span class="number">1</span>, <span class="number">0.0</span>));</span><br><span class="line">        <span class="comment">// 初始化 dp 数组：只有一组时，dp[i][1] 就是前 i 个元素的平均值</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            dp[i][<span class="number">1</span>] = prefixSum[i] / i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 逐步增加分组数量，从 2 到 k</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">2</span>; j &lt;= k; j++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i = j; i &lt;= n; i++) &#123;  <span class="comment">// 至少分成 j 组</span></span><br><span class="line">                <span class="comment">// 尝试把前 i 个元素分成 j 组，最后一组从 t+1 到 i</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> t = j - <span class="number">1</span>; t &lt; i; t++) &#123;</span><br><span class="line">                    dp[i][j] = <span class="built_in">max</span>(dp[i][j], dp[t][j - <span class="number">1</span>] + (prefixSum[i] - prefixSum[t]) / (i - t));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 最后返回前 n 个元素分成 k 组时的最大分数</span></span><br><span class="line">        <span class="keyword">return</span> dp[n][k];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<strong>注</strong></li>
+<li>一般的做法是，dp数组的0索引视为无意义。同时也要注意相关的数组的索引设置。比如本题中，dp[i][j]表示前i个数分成j组，那么dp定义时dp(n + 1, vector<double>(k + 1, 0.0));</li>
+<li>同时prefixSum表示前n个数的和，因此定义的时候为prefixSum(n + 1, 0.0);</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LeetCode/" rel="tag"># LeetCode</a>
+              <a href="/tags/%E5%9B%9E%E6%BA%AF%E6%B3%95/" rel="tag"># 回溯法</a>
+              <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="tag"># 动态规划</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/18/JsonIterator%E5%AE%9E%E7%8E%B0/" rel="prev" title="JsonIterator实现">
+                  <i class="fa fa-angle-left"></i> JsonIterator实现
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/09/19/%E9%87%91%E5%B1%B19-18%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%AC%94%E8%AF%95/" rel="next" title="金山9-18服务端笔试">
+                  金山9-18服务端笔试 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">switch mbc</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
